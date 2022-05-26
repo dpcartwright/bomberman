@@ -30,24 +30,23 @@ class MainScene extends Phaser.Scene {
 
   preload() {
     this.load.image('grass_tiles', '../assets/TX Tileset Grass-extruded.png')
-    this.load.image('stoneground_tiles', '../assets/TX Tileset Stone Ground-extruded.png')
-    this.load.image('wall_tiles', '../assets/TX Tileset Wall-extruded.png')
-    this.load.tilemapTiledJSON('tilemap', '../assets/map.json')
+    this.load.image('static_block_tiles', '../assets/stage_01_static_blocks.png')
+    this.load.tilemapTiledJSON('tilemap', '../assets/bm_stage_01.json')
 
     this.load.atlas('alchemist', '../assets/alchemist.png', '../assets/alchemist_atlas.json')
     this.load.animation('alchemist_anim', '../assets/alchemist_anim.json')
+
   }
 
   create() {
     this.cursors = this.input.keyboard.createCursorKeys()
     const map = this.make.tilemap({ key: 'tilemap' })
-    const grassTiles = map.addTilesetImage('grass_tiles', 'grass_tiles', 32, 32, 1, 2)
-    const stonegroundTiles = map.addTilesetImage('stoneground_tiles', 'stoneground_tiles', 32, 32, 1, 2)
-    const wallTiles = map.addTilesetImage('wall_tiles', 'wall_tiles', 32, 32, 1, 2)
-    const allTiles = [grassTiles, stonegroundTiles, wallTiles]
-    const groundLayer = map.createLayer('Ground', allTiles)
-    const buildingLayer = map.createLayer('Buildings', allTiles)
-    buildingLayer.setCollisionByProperty({ collides: true })
+    const grassTiles = map.addTilesetImage('grass_tiles', 'grass_tiles', 64, 64, 0, 0)
+    const blockTiles = map.addTilesetImage('static_block_tiles', 'static_block_tiles', 64, 64, 0, 0)
+    const allTiles = [grassTiles, blockTiles]
+    const groundLayer = map.createLayer('grass_layer', allTiles)
+    const staticBlockLayer = map.createLayer('static_block_layer', allTiles)
+    staticBlockLayer.setCollisionByProperty({ collides: true })
 
     this.socket.on('snapshot', snapshot => {
       SI.snapshot.add(snapshot)
@@ -76,13 +75,7 @@ class MainScene extends Phaser.Scene {
       if (!exists) {
         const _avatar = this.physics.add.sprite(avatar.x, avatar.y, 'alchemist')
         this.avatars.set(avatar.id, { avatar: _avatar })
-        if (avatar.id == this.socket.id) {
-          let camera = this.cameras.main
-          camera.zoom = 3
-          camera.startFollow(_avatar)
-          camera.setLerp(0.1, 0.1)
-          camera.setBounds(0, 0, 1280, 960)
-        }
+
       } else {
         if (avatar.id != this.socket.id) {
           const _avatar = this.avatars.get(avatar.id).avatar
@@ -151,11 +144,12 @@ clientPrediction = (movement) => {
 }
 
 const config = {
+  parent:'phaser-container',
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 960,
-    height: 720,
+    width: 1024,
+    height: 832,
     zoom: 1
   },
   physics: {

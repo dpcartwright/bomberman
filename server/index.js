@@ -13,7 +13,7 @@ const SI = new SnapshotInterpolation()
 const Phaser = require('phaser')
 
 // imports for assets
-const tilemap = JSON.parse(fs.readFileSync('client/assets/map.json', 'utf8'));
+const tilemap = JSON.parse(fs.readFileSync('client/assets/bm_stage_01.json', 'utf8'));
 
 class Avatar extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
@@ -42,14 +42,12 @@ class ServerScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, 1280, 720)
 
     const map = this.make.tilemap({ key: 'tilemap' })
-    const allTiles = []
-    const groundLayer = map.createLayer('Ground', allTiles)
-    const buildingLayer = map.createLayer('Buildings', allTiles)
-    buildingLayer.setCollisionByProperty({ collides: true })
+    //buildingLayer.setCollisionByProperty({ collides: true })
 
     io.on('connection', socket => {
-      const x = Math.random() * 1200 + 40
-      const avatar = new Avatar(this, x, 200)
+      const x = Math.random() * 180 + 40
+      const y = Math.random() * 180 + 40
+      const avatar = new Avatar(this, x, y)
 
       this.players.set(socket.id, {
         socket,
@@ -104,8 +102,9 @@ class ServerScene extends Phaser.Scene {
 
 const config = {
   type: Phaser.HEADLESS,
-  width: 960,
-  height: 720,
+  width: 1024,
+  height: 832,
+  zoom: 1,
   banner: false,
   audio: false,
   scene: [ServerScene],
