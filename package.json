@@ -1,8 +1,11 @@
 {
-  "name": "phaser-on-nodejs-example",
+  "name": "bomberman",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "exports": {
+    "@baseDir": "./"
+  },
   "scripts": {
     "start": "nodemon server/index.js"
   },
