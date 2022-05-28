@@ -31,11 +31,13 @@ const tilemap = JSON.parse(fs.readFileSync('client/assets/bm_stage_01.json', 'ut
 
 // imports for scenes
 
+
 class ServerScene extends Phaser.Scene {
   constructor() {
     super()
     this.tick = 0
     this.players = new Map()
+    this.destructibleBlocks= new Map()
   }
 
   preload() {
@@ -49,9 +51,19 @@ class ServerScene extends Phaser.Scene {
 
     const map = this.make.tilemap({ key: 'tilemap' })   
     const staticBlockTiles = map.addTilesetImage('static_block_tiles', 'static_block_tiles', 64, 64, 0, 0)
-    const allTiles = [staticBlockTiles]
-    const staticBlockLayer = map.createLayer('static_block_layer', allTiles)
+    const staticBlockLayer = map.createLayer('static_block_layer', staticBlockTiles)
     staticBlockLayer.setCollisionByProperty({ collides: true })
+
+    // block spaces = 13 x 11
+    // every other row limited to every other block being space (first row and first column always fine)
+    // exceptions in each corner for player starting positions
+    // randomly remove ~10 blocks
+    for (let rows = 0; rows < 13; rows++) {
+      for (let cols = 0; cols < 11; cols++) {
+        let newBlock = new BreakableBlock({scene: this, x: 64 + (cols * 64), y: 64 + (rows * 64), serverMode: true})
+        this.destructibleBlocks.set(newBlock)
+      }
+    }
 
     io.on('connection', socket => {
       const x = Math.random() * 180 + 40
@@ -101,10 +113,21 @@ class ServerScene extends Phaser.Scene {
     const snapshot = SI.snapshot.create(avatars)
     SI.vault.add(snapshot)
 
-    // send all avatars to all players
+    // get an array of all destructibleBlocks
+    //const blocks = []
+    //this.destructibleBlocks.forEach(destructibleBlock => {
+    //  const block = destructibleBlock
+    //  blocks.push({ x: block.x, y: block.y })
+   // })
+
+    //const snapshotBlocks = SI.snapshot.create(blocks)
+    //SI.vault.add(snapshotBlocks)
+
+    // send all avatars and blocks to all players
     this.players.forEach(player => {
       const { socket } = player
       socket.emit('snapshot', snapshot)
+      //socket.emit('snapshotBlocks', snapshotBlocks)
     })
   }
 }
