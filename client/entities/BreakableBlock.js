@@ -1,6 +1,12 @@
 export default class BreakableBlock extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y) {
+  constructor(data) {
+    let { scene, x, y, frame, serverMode } = data
+
+    if (serverMode) {
     super(scene, x, y, '')
+    } else {
+      super(...data)
+    }
 
     scene.add.existing(this)
     scene.physics.add.existing(this)

@@ -56,7 +56,7 @@ class ServerScene extends Phaser.Scene {
     io.on('connection', socket => {
       const x = Math.random() * 180 + 40
       const y = Math.random() * 180 + 40
-      const avatar = new Avatar(this, x, y, true)
+      const avatar = new Avatar({scene: this, x: x, y: y, serverMode: true})
 
       this.players.set(socket.id, {
         socket,
