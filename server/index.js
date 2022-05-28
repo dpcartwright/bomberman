@@ -1,32 +1,35 @@
 // imports for server
-const express = require('express')
+import express from 'express'
+import { Server } from 'socket.io'
+import http from 'http'
+import path from 'path'
+import fs from 'fs'
+
 const app = express()
-const server = require('http').createServer(app)
-const io = require('socket.io')(server)
-const path = require('path')
-const fs = require('fs')
+const server = http.createServer(app)
+const io = new Server(server)
+
+// dir and filenames
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 // imports for phaser
-require('@geckos.io/phaser-on-nodejs')
-const { SnapshotInterpolation } = require('@geckos.io/snapshot-interpolation')
+import '@geckos.io/phaser-on-nodejs'
+import { SnapshotInterpolation } from '@geckos.io/snapshot-interpolation'
 const SI = new SnapshotInterpolation()
-const Phaser = require('phaser')
+import Phaser from 'phaser'
+
+// imports for entities
+import Avatar from '../client/entities/Avatar.js'
+import BreakableBlock from '../client/entities/BreakableBlock.js'
 
 // imports for assets
 const tilemap = JSON.parse(fs.readFileSync('client/assets/bm_stage_01.json', 'utf8'));
 
-
-class Avatar extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y) {
-    super(scene, x, y, '')
-
-    scene.add.existing(this)
-    scene.physics.add.existing(this)
-
-    this.body.setSize(32, 48)
-    this.setCollideWorldBounds(true)
-  }
-}
+// imports for scenes
 
 class ServerScene extends Phaser.Scene {
   constructor() {
@@ -38,6 +41,7 @@ class ServerScene extends Phaser.Scene {
   preload() {
     this.load.tilemapTiledJSON('tilemap', tilemap);
     this.load.image('static_block_tiles', __dirname + '/../client/assets/stage_01_static_blocks.png')
+    this.load.image('breakable_block_tiles', __dirname + '/../client/assets/stage_01_breakable_block.png')
   }
 
   create() {
@@ -52,7 +56,7 @@ class ServerScene extends Phaser.Scene {
     io.on('connection', socket => {
       const x = Math.random() * 180 + 40
       const y = Math.random() * 180 + 40
-      const avatar = new Avatar(this, x, y)
+      const avatar = new Avatar(this, x, y, true)
 
       this.players.set(socket.id, {
         socket,
@@ -84,7 +88,7 @@ class ServerScene extends Phaser.Scene {
   update() {
     this.tick++
 
-    // only send the update to the client at 30 FPS (save bandwidth)
+    // only send the update to the client at 15 FPS (save bandwidth)
     if (this.tick % 4 !== 0) return
 
     // get an array of all avatars
