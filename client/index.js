@@ -1,3 +1,7 @@
+// imports for entities
+import Avatar from '../entities/Avatar.js'
+import BreakableBlock from '../entities/BreakableBlock.js'
+
 const { SnapshotInterpolation, Vault } = Snap
 const SI = new SnapshotInterpolation(15) // 15 FPS
 
@@ -8,6 +12,7 @@ class MainScene extends Phaser.Scene {
     super()
 
     this.avatars = new Map()
+    this.breakableBlocks = new Map()
     this.cursors
 
     this.socket = io('http://localhost:3000')
@@ -19,6 +24,7 @@ class MainScene extends Phaser.Scene {
   preload() {
     this.load.image('grass_tiles', '../assets/TX Tileset Grass-extruded.png')
     this.load.image('static_block_tiles', '../assets/stage_01_static_blocks.png')
+    this.load.image('breakable_block', '../assets/stage_01_breakable_block.png')
     this.load.tilemapTiledJSON('tilemap', '../assets/bm_stage_01.json')
 
     this.load.atlas('alchemist', '../assets/alchemist.png', '../assets/alchemist_atlas.json')
@@ -44,11 +50,29 @@ class MainScene extends Phaser.Scene {
   }
 
   update() {
-    const snap = SI.calcInterpolation('x y')
-    if (!snap) return
+    const snap = SI.calcInterpolation('x y', 'players')
+    const blockSnap = SI.calcInterpolation('x y', 'blocks')
+    if (!snap  || !blockSnap ) return
 
     const { state } = snap
-    if (!state) return
+    const blockState = blockSnap.state
+    if (!state || !blockState) return
+
+
+    blockState.forEach(block => {
+      const exists = this.breakableBlocks.has(block.id)
+
+      if (!exists) {
+        const _breakableBlock = new BreakableBlock({scene: this, x: block.x, y: block.y, frame: 'breakable_block'})
+        this.breakableBlocks.set(block.id, 
+          { breakableBlock: _breakableBlock }
+          )
+      } else {
+        const _breakableBlock = this.breakableBlocks.get(block.id).breakableBlock
+        _breakableBlock.setX(block.x)
+        _breakableBlock.setY(block.y)
+      }
+    })
 
     const movement = {
       left: this.cursors.left.isDown,
@@ -56,7 +80,7 @@ class MainScene extends Phaser.Scene {
       up: this.cursors.up.isDown,
       down: this.cursors.down.isDown
     }
-    
+
     state.forEach(avatar => {
       const exists = this.avatars.has(avatar.id)
 
@@ -92,8 +116,8 @@ serverReconciliation = (movement) => {
 
     if (serverSnapshot && playerSnapshot) {
       // get the current player position on the server
-      const serverPos = serverSnapshot.state.filter(s => s.id === this.socket.id)[0]
-
+      const serverPos = serverSnapshot.state.players.filter(s => s.id === this.socket.id)[0]
+      
       // calculate the offset between server and client
       const offsetX = playerSnapshot.state[0].x - serverPos.x
       const offsetY = playerSnapshot.state[0].y - serverPos.y

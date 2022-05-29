@@ -37,7 +37,7 @@ class ServerScene extends Phaser.Scene {
     super()
     this.tick = 0
     this.players = new Map()
-    this.destructibleBlocks= new Map()
+    this.breakableBlocks= new Map()
   }
 
   preload() {
@@ -58,13 +58,18 @@ class ServerScene extends Phaser.Scene {
     // every other row limited to every other block being space (first row and first column always fine)
     // exceptions in each corner for player starting positions
     // randomly remove ~10 blocks
+    let blockID = 0
     for (let rows = 0; rows < 13; rows++) {
       for (let cols = 0; cols < 11; cols++) {
         let newBlock = new BreakableBlock({scene: this, x: 64 + (cols * 64), y: 64 + (rows * 64), serverMode: true})
-        this.destructibleBlocks.set(newBlock)
+        this.breakableBlocks.set(blockID, {
+          blockID, 
+          newBlock
+        })
+        blockID++
       }
     }
-
+    
     io.on('connection', socket => {
       const x = Math.random() * 180 + 40
       const y = Math.random() * 180 + 40
@@ -110,24 +115,25 @@ class ServerScene extends Phaser.Scene {
       avatars.push({ id: socket.id, x: avatar.x, y: avatar.y })
     })
 
-    const snapshot = SI.snapshot.create(avatars)
+    // get an array of all breakableBlocks
+    const blocks = []
+    this.breakableBlocks.forEach(breakableBlock => {
+      const { blockID, newBlock } = breakableBlock
+      blocks.push({ id: blockID, x: newBlock.x, y: newBlock.y })
+    })
+    
+    const worldState = {
+      players: avatars,
+      blocks: blocks
+    }
+
+    const snapshot = SI.snapshot.create(worldState)
     SI.vault.add(snapshot)
-
-    // get an array of all destructibleBlocks
-    //const blocks = []
-    //this.destructibleBlocks.forEach(destructibleBlock => {
-    //  const block = destructibleBlock
-    //  blocks.push({ x: block.x, y: block.y })
-   // })
-
-    //const snapshotBlocks = SI.snapshot.create(blocks)
-    //SI.vault.add(snapshotBlocks)
 
     // send all avatars and blocks to all players
     this.players.forEach(player => {
       const { socket } = player
       socket.emit('snapshot', snapshot)
-      //socket.emit('snapshotBlocks', snapshotBlocks)
     })
   }
 }
