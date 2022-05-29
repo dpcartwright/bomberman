@@ -38,7 +38,7 @@ class ServerScene extends Phaser.Scene {
     this.tick = 0
     this.blockID = 0
     this.players = new Map()
-    this.blocks= new Map()
+    this.blocks = new Map()
   }
 
   preload() {
@@ -54,7 +54,8 @@ class ServerScene extends Phaser.Scene {
     let blockID = 0
     stageBlocks.forEach(rows => {
       rows.forEach(colEntry => {
-        if (colEntry === "e" || colEntry === "s" || (colEntry === "b" && Math.random() > 0.06)) {
+        // "b"reakable blocks have a tiny chance of not being created. "e"dge and "s"tatic always are
+        if (colEntry === "e" || colEntry === "s" || (colEntry === "b" && Math.random() > 0.05)) {
           let blockEntity = new Block({scene: this, x: (colCount * 64), y: (rowCount * 64), serverMode: true, blockType: colEntry})
           blockID = this.blockID
           this.blocks.set(blockID, {
