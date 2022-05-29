@@ -22,6 +22,8 @@ class MainScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('background', '../assets/stage_01_background.png')
+
     this.load.image('edge_block', '../assets/stage_01_edge_block.png')
     this.load.image('static_block', '../assets/stage_01_static_block.png')
     this.load.image('breakable_block', '../assets/stage_01_breakable_block.png')
