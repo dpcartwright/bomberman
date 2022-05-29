@@ -62,7 +62,7 @@ class ServerScene extends Phaser.Scene {
     let blockID = 0
     stageBlockTemplate.forEach(rows => {
       rows.forEach(cols => {
-        // 1 in 20 chance to skip creating this block
+        // introduce small chance of skipping block creation
         const skipBlock = Math.random()
         if (skipBlock > 0.06) {
           let newBlock = new BreakableBlock({scene: this, x: 64 + (cols * 64), y: 64 + (rowCount * 64), serverMode: true})
