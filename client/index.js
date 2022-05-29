@@ -1,8 +1,6 @@
 // imports for entities
 import Avatar from '../entities/Avatar.js'
-import EdgeBlock from '../entities/EdgeBlock.js'
-import StaticBlock from '../entities/StaticBlock.js'
-import BreakableBlock from '../entities/BreakableBlock.js'
+import Block from '../entities/Block.js'
 
 const { SnapshotInterpolation, Vault } = Snap
 const SI = new SnapshotInterpolation(15) // 15 FPS
@@ -14,9 +12,7 @@ class MainScene extends Phaser.Scene {
     super()
 
     this.avatars = new Map()
-    this.edgeBlocks = new Map()
-    this.staticBlocks = new Map()
-    this.breakableBlocks = new Map()
+    this.blocks = new Map()
     this.cursors
 
     this.socket = io('http://localhost:3000')
@@ -47,59 +43,27 @@ class MainScene extends Phaser.Scene {
 
   update() {
     const snap = SI.calcInterpolation('x y', 'players')
-    const edgeBlockSnap = SI.calcInterpolation('x y', 'edgeBlocks')
-    const staticBlockSnap = SI.calcInterpolation('x y', 'staticBlocks')
-    const breakableBlockSnap = SI.calcInterpolation('x y', 'breakableBlocks')
-    if (!snap  || !edgeBlockSnap || !staticBlockSnap || !breakableBlockSnap) return
+    const blockSnap = SI.calcInterpolation('x y', 'blocks')
+
+    if (!snap  || !blockSnap) return
 
     const { state } = snap
-    const edgeBlockState = edgeBlockSnap.state
-    const staticBlockState = staticBlockSnap.state
-    const breakableBlockState = breakableBlockSnap.state
-    if (!state || !edgeBlockState || !staticBlockState || !breakableBlockState) return
+    const blockState = blockSnap.state
+    
+    if (!state || !blockState) return
 
-    edgeBlockState.forEach(block => {
-      const exists = this.edgeBlocks.has(block.id)
-
-      if (!exists) {
-        const _edgeBlock = new EdgeBlock({scene: this, x: block.x, y: block.y, frame: 'edge_block'})
-        this.edgeBlocks.set(block.id, 
-          { edgeBlock: _edgeBlock }
-          )
-      } else {
-        const _edgeBlock = this.edgeBlocks.get(block.id).edgeBlock
-        _edgeBlock.setX(block.x)
-        _edgeBlock.setY(block.y)
-      }
-    })
-
-    staticBlockState.forEach(block => {
-      const exists = this.staticBlocks.has(block.id)
+    blockState.forEach(block => {
+      const exists = this.blocks.has(block.id)
 
       if (!exists) {
-        const _staticBlock = new StaticBlock({scene: this, x: block.x, y: block.y, frame: 'static_block'})
-        this.staticBlocks.set(block.id, 
-          { staticBlock: _staticBlock }
+        const _block = new Block({scene: this, x: block.x, y: block.y, blockType: block.blockType})
+        this.blocks.set(block.id, 
+          { block: _block }
           )
       } else {
-        const _staticBlock = this.staticBlocks.get(block.id).staticBlock
-        _staticBlock.setX(block.x)
-        _staticBlock.setY(block.y)
-      }
-    })
-
-    breakableBlockState.forEach(block => {
-      const exists = this.breakableBlocks.has(block.id)
-
-      if (!exists) {
-        const _breakableBlock = new BreakableBlock({scene: this, x: block.x, y: block.y, frame: 'breakable_block'})
-        this.breakableBlocks.set(block.id, 
-          { breakableBlock: _breakableBlock }
-          )
-      } else {
-        const _breakableBlock = this.breakableBlocks.get(block.id).breakableBlock
-        _breakableBlock.setX(block.x)
-        _breakableBlock.setY(block.y)
+        const _block = this.blocks.get(block.id).block
+        _block.setX(block.x)
+        _block.setY(block.y)
       }
     })
 

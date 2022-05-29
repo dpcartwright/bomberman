@@ -24,9 +24,7 @@ import Phaser from 'phaser'
 
 // imports for entities
 import Avatar from '../client/entities/Avatar.js'
-import BreakableBlock from '../client/entities/BreakableBlock.js'
-import EdgeBlock from '../client/entities/EdgeBlock.js'
-import StaticBlock from '../client/entities/StaticBlock.js'
+import Block from '../client/entities/Block.js'
 
 // imports for assets
 const stageBlocks = Object.values(JSON.parse(fs.readFileSync(__dirname + '/../client/stages/01.json', 'utf8')))
@@ -40,9 +38,7 @@ class ServerScene extends Phaser.Scene {
     this.tick = 0
     this.blockID = 0
     this.players = new Map()
-    this.edgeBlocks= new Map()
-    this.staticBlocks= new Map()
-    this.breakableBlocks= new Map()
+    this.blocks= new Map()
   }
 
   preload() {
@@ -57,40 +53,15 @@ class ServerScene extends Phaser.Scene {
     let colCount = 0
     let blockID = 0
     stageBlocks.forEach(rows => {
-      rows.forEach(cols => {
-        switch (cols) {
-          case "e":
-            let newEdgeBlock = new EdgeBlock({scene: this, x: (colCount * 64), y: (rowCount * 64), serverMode: true})
-            blockID = this.blockID
-            this.edgeBlocks.set(blockID, {
-              blockID, 
-              newEdgeBlock
-            })
-            this.blockID++
-            break
-          case "s":
-            let newStaticBlock = new StaticBlock({scene: this, x: (colCount * 64), y: (rowCount * 64), serverMode: true})
-            blockID = this.blockID
-            this.staticBlocks.set(blockID, {
-              blockID, 
-              newStaticBlock
-            })
-            this.blockID++
-            break
-          case "b":
-            // introduce small chance of skipping block creation
-            const skipBlock = Math.random()
-            if (skipBlock > 0.06) {
-              let newBreakableBlock = new BreakableBlock({scene: this, x: (colCount * 64), y: (rowCount * 64), serverMode: true})
-              blockID = this.blockID
-              this.breakableBlocks.set(blockID, {
-                blockID, 
-                newBreakableBlock
-              })
-              this.blockID++
-            }
-          default:
-            // nothing to do - should be an "x" to signify this is a blank space
+      rows.forEach(colEntry => {
+        if (colEntry === "e" || colEntry === "s" || (colEntry === "b" && Math.random() > 0.06)) {
+          let blockEntity = new Block({scene: this, x: (colCount * 64), y: (rowCount * 64), serverMode: true, blockType: colEntry})
+          blockID = this.blockID
+          this.blocks.set(blockID, {
+            blockID, 
+            blockEntity
+          })
+          this.blockID++
         }
         colCount++
       })
@@ -143,30 +114,16 @@ class ServerScene extends Phaser.Scene {
       avatars.push({ id: socket.id, x: avatar.x, y: avatar.y })
     })
 
-    // get an array of all breakableBlocks
-    const edgeBlocksArr = []
-    this.edgeBlocks.forEach(edgeBlock => {
-      const { blockID, newEdgeBlock } = edgeBlock
-      edgeBlocksArr.push({ id: blockID, x: newEdgeBlock.x, y: newEdgeBlock.y })
-    })
-    // get an array of all breakableBlocks
-    const staticBlocksArr = []
-    this.staticBlocks.forEach(staticBlock => {
-      const { blockID, newStaticBlock } = staticBlock
-      staticBlocksArr.push({ id: blockID, x: newStaticBlock.x, y: newStaticBlock.y })
-    })
-    // get an array of all breakableBlocks
-    const breakableBlocksArr = []
-    this.breakableBlocks.forEach(breakableBlock => {
-      const { blockID, newBreakableBlock } = breakableBlock
-      breakableBlocksArr.push({ id: blockID, x: newBreakableBlock.x, y: newBreakableBlock.y })
+    // get an array of all blocks
+    const blocksArr = []
+    this.blocks.forEach(block => {
+      const { blockID, blockEntity } = block
+      blocksArr.push({ id: blockID, x: blockEntity.x, y: blockEntity.y, blockType: blockEntity.blockType })
     })
     
     const worldState = {
       players: avatars,
-      edgeBlocks: edgeBlocksArr,
-      staticBlocks: staticBlocksArr,
-      breakableBlocks: breakableBlocksArr
+      blocks: blocksArr
     }
 
     const snapshot = SI.snapshot.create(worldState)

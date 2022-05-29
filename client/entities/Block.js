@@ -1,6 +1,18 @@
-export default class BreakableBlock extends Phaser.Physics.Matter.Sprite {
+export default class Block extends Phaser.Physics.Matter.Sprite {
   constructor(data) {
-    let { scene, x, y, frame, serverMode } = data
+    let { scene, x, y, frame, serverMode, blockType } = data
+
+    switch (blockType) {
+      case "e":
+        frame = 'edge_block'
+        break
+      case "s":
+        frame = 'static_block'
+        break
+      default:
+        // probably a "b"
+        frame = 'breakable_block'
+    }
 
     const blockSpriteOffset = 32 // half of block height - shouldn't be hardcoded like this
 
@@ -9,6 +21,8 @@ export default class BreakableBlock extends Phaser.Physics.Matter.Sprite {
     } else {
       super(scene.matter.world, x + blockSpriteOffset, y + blockSpriteOffset, frame)
     }
+
+    this.blockType = blockType
 
     scene.add.existing(this)
 
