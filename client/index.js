@@ -1,5 +1,7 @@
 // imports for entities
 import Avatar from '../entities/Avatar.js'
+import EdgeBlock from '../entities/EdgeBlock.js'
+import StaticBlock from '../entities/StaticBlock.js'
 import BreakableBlock from '../entities/BreakableBlock.js'
 
 const { SnapshotInterpolation, Vault } = Snap
@@ -12,6 +14,8 @@ class MainScene extends Phaser.Scene {
     super()
 
     this.avatars = new Map()
+    this.edgeBlocks = new Map()
+    this.staticBlocks = new Map()
     this.breakableBlocks = new Map()
     this.cursors
 
@@ -22,10 +26,9 @@ class MainScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('grass_tiles', '../assets/TX Tileset Grass-extruded.png')
-    this.load.image('static_block_tiles', '../assets/stage_01_static_blocks.png')
+    this.load.image('edge_block', '../assets/stage_01_edge_block.png')
+    this.load.image('static_block', '../assets/stage_01_static_block.png')
     this.load.image('breakable_block', '../assets/stage_01_breakable_block.png')
-    this.load.tilemapTiledJSON('tilemap', '../assets/bm_stage_01.json')
 
     this.load.atlas('alchemist', '../assets/alchemist.png', '../assets/alchemist_atlas.json')
     this.load.animation('alchemist_anim', '../assets/alchemist_anim.json')
@@ -34,13 +37,6 @@ class MainScene extends Phaser.Scene {
 
   create() {
     this.cursors = this.input.keyboard.createCursorKeys()
-    const map = this.make.tilemap({ key: 'tilemap' })
-    const grassTiles = map.addTilesetImage('grass_tiles', 'grass_tiles', 64, 64, 0, 0)
-    const blockTiles = map.addTilesetImage('static_block_tiles', 'static_block_tiles', 64, 64, 0, 0)
-    const allTiles = [grassTiles, blockTiles]
-    const groundLayer = map.createLayer('grass_layer', allTiles)
-    const staticBlockLayer = map.createLayer('static_block_layer', allTiles)
-    staticBlockLayer.setCollisionByProperty({ collides: true })
 
     this.socket.on('snapshot', snapshot => {
       SI.snapshot.add(snapshot)
@@ -51,15 +47,48 @@ class MainScene extends Phaser.Scene {
 
   update() {
     const snap = SI.calcInterpolation('x y', 'players')
-    const blockSnap = SI.calcInterpolation('x y', 'blocks')
-    if (!snap  || !blockSnap ) return
+    const edgeBlockSnap = SI.calcInterpolation('x y', 'edgeBlocks')
+    const staticBlockSnap = SI.calcInterpolation('x y', 'staticBlocks')
+    const breakableBlockSnap = SI.calcInterpolation('x y', 'breakableBlocks')
+    if (!snap  || !edgeBlockSnap || !staticBlockSnap || !breakableBlockSnap) return
 
     const { state } = snap
-    const blockState = blockSnap.state
-    if (!state || !blockState) return
+    const edgeBlockState = edgeBlockSnap.state
+    const staticBlockState = staticBlockSnap.state
+    const breakableBlockState = breakableBlockSnap.state
+    if (!state || !edgeBlockState || !staticBlockState || !breakableBlockState) return
 
+    edgeBlockState.forEach(block => {
+      const exists = this.edgeBlocks.has(block.id)
 
-    blockState.forEach(block => {
+      if (!exists) {
+        const _edgeBlock = new EdgeBlock({scene: this, x: block.x, y: block.y, frame: 'edge_block'})
+        this.edgeBlocks.set(block.id, 
+          { edgeBlock: _edgeBlock }
+          )
+      } else {
+        const _edgeBlock = this.edgeBlocks.get(block.id).edgeBlock
+        _edgeBlock.setX(block.x)
+        _edgeBlock.setY(block.y)
+      }
+    })
+
+    staticBlockState.forEach(block => {
+      const exists = this.staticBlocks.has(block.id)
+
+      if (!exists) {
+        const _staticBlock = new StaticBlock({scene: this, x: block.x, y: block.y, frame: 'static_block'})
+        this.staticBlocks.set(block.id, 
+          { staticBlock: _staticBlock }
+          )
+      } else {
+        const _staticBlock = this.staticBlocks.get(block.id).staticBlock
+        _staticBlock.setX(block.x)
+        _staticBlock.setY(block.y)
+      }
+    })
+
+    breakableBlockState.forEach(block => {
       const exists = this.breakableBlocks.has(block.id)
 
       if (!exists) {
@@ -137,7 +166,7 @@ serverReconciliation = (movement) => {
 
 clientPrediction = (movement) => {
   const { left, up, right, down } = movement
-  const speed = 160
+  const speed = 16
   const player = this.avatars.get(this.socket.id).avatar
 
   if (player) {
@@ -167,10 +196,10 @@ const config = {
   physics: {
     default: 'matter',
     matter: {
-      gravity: { y: 0 }
+      gravity: { y: 0 },
+      debug: true,
+      debugBodyColor: 0xff00ff
     },
-    debug: false,
-    debugBodyColor: 0xff00ff
   },
   scene: [MainScene]
 }

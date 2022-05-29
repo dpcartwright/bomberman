@@ -1,4 +1,4 @@
-export default class BreakableBlock extends Phaser.Physics.Matter.Sprite {
+export default class StaticBlock extends Phaser.Physics.Matter.Sprite {
   constructor(data) {
     let { scene, x, y, frame, serverMode } = data
 
