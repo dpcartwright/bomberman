@@ -85,7 +85,7 @@ class MainScene extends Phaser.Scene {
       const exists = this.avatars.has(avatar.id)
 
       if (!exists) {
-        const _avatar = this.physics.add.sprite(avatar.x, avatar.y, 'alchemist')
+        const _avatar = new Avatar({scene: this,x: avatar.x, y: avatar.y, frame: 'alchemist'})
         this.avatars.set(avatar.id, { avatar: _avatar })
 
       } else {
@@ -165,10 +165,12 @@ const config = {
     zoom: 1
   },
   physics: {
-    default: 'arcade',
-    arcade: {
+    default: 'matter',
+    matter: {
       gravity: { y: 0 }
-    }
+    },
+    debug: false,
+    debugBodyColor: 0xff00ff
   },
   scene: [MainScene]
 }

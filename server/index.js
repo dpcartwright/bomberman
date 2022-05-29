@@ -47,7 +47,7 @@ class ServerScene extends Phaser.Scene {
   }
 
   create() {
-    this.physics.world.setBounds(0, 0, 1024, 832)
+    this.matter.world.setBounds(0, 0, 1024, 832)
 
     const map = this.make.tilemap({ key: 'tilemap' })   
     const staticBlockTiles = map.addTilesetImage('static_block_tiles', 'static_block_tiles', 64, 64, 0, 0)
@@ -153,10 +153,12 @@ const config = {
   audio: false,
   scene: [ServerScene],
   physics: {
-    default: 'arcade',
-    arcade: {
+    default: 'matter',
+    matter: {
       gravity: { y: 0 }
-    }
+    },
+    debug: false,
+    debugBodyColor: 0xff00ff
   }
 }
 

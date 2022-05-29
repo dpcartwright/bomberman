@@ -1,7 +1,7 @@
 // imports for phaser
 const Phaser = require('phaser')
 
-class ServerScene extends Phaser.Physics.Arcade.Sprite {
+class ServerScene extends Phaser.Scene {
     constructor(scene, x, y) {
       super(scene, x, y, '')
   
