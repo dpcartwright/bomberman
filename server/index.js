@@ -27,7 +27,8 @@ import Avatar from '../client/entities/Avatar.js'
 import BreakableBlock from '../client/entities/BreakableBlock.js'
 
 // imports for assets
-const tilemap = JSON.parse(fs.readFileSync('client/assets/bm_stage_01.json', 'utf8'));
+const tilemap = JSON.parse(fs.readFileSync(__dirname + '/../client/assets/bm_stage_01.json', 'utf8'))
+const stageBlockTemplate = Object.values(JSON.parse(fs.readFileSync(__dirname + '/../client/stages/stage_01_block_template.json', 'utf8')))
 
 // imports for scenes
 
@@ -43,7 +44,6 @@ class ServerScene extends Phaser.Scene {
   preload() {
     this.load.tilemapTiledJSON('tilemap', tilemap);
     this.load.image('static_block_tiles', __dirname + '/../client/assets/stage_01_static_blocks.png')
-    this.load.image('breakable_block_tiles', __dirname + '/../client/assets/stage_01_breakable_block.png')
   }
 
   create() {
@@ -58,17 +58,23 @@ class ServerScene extends Phaser.Scene {
     // every other row limited to every other block being space (first row and first column always fine)
     // exceptions in each corner for player starting positions
     // randomly remove ~10 blocks
+    let rowCount = 0
     let blockID = 0
-    for (let rows = 0; rows < 13; rows++) {
-      for (let cols = 0; cols < 11; cols++) {
-        let newBlock = new BreakableBlock({scene: this, x: 64 + (cols * 64), y: 64 + (rows * 64), serverMode: true})
-        this.breakableBlocks.set(blockID, {
-          blockID, 
-          newBlock
-        })
-        blockID++
-      }
-    }
+    stageBlockTemplate.forEach(rows => {
+      rows.forEach(cols => {
+        // 1 in 20 chance to skip creating this block
+        const skipBlock = Math.random()
+        if (skipBlock > 0.06) {
+          let newBlock = new BreakableBlock({scene: this, x: 64 + (cols * 64), y: 64 + (rowCount * 64), serverMode: true})
+          this.breakableBlocks.set(blockID, {
+            blockID, 
+            newBlock
+          })
+          blockID++
+        }
+      })
+      rowCount++
+    })
     
     io.on('connection', socket => {
       const x = Math.random() * 180 + 40

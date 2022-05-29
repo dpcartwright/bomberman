@@ -11,6 +11,8 @@ export default class BreakableBlock extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this)
     scene.physics.add.existing(this)
 
+    this.setOrigin(0)
+
     this.body.setSize(64, 64)
   }
 }
