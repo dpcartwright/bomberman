@@ -1,0 +1,52 @@
+{
+    "anims": [
+        {
+            "key": "walk_down",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "player01",
+                    "frame": "p1_down_walk_1"
+                },
+                {
+                    "key": "player01",
+                    "frame": "p1_down_walk_2"
+                },
+                {
+                    "key": "player01",
+                    "frame": "p1_down_walk_3"
+                },
+                {
+                    "key": "player01",
+                    "frame": "p1_down_walk_4"
+                }
+            ]
+        },
+        {
+            "key": "stand",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "player01",
+                    "frame": "p1_down_walk_1"
+                },
+                {
+                    "key": "player01",
+                    "frame": "p1_down_walk_2"
+                },
+                {
+                    "key": "player01",
+                    "frame": "p1_down_walk_3"
+                },
+                {
+                    "key": "player01",
+                    "frame": "p1_down_walk_4"
+                }
+            ]
+        }
+    ]
+}

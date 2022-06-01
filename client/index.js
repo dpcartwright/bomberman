@@ -28,8 +28,8 @@ class MainScene extends Phaser.Scene {
     this.load.image('static_block', '../assets/stage_01_static_block.png')
     this.load.image('breakable_block', '../assets/stage_01_breakable_block.png')
 
-    this.load.atlas('alchemist', '../assets/alchemist.png', '../assets/alchemist_atlas.json')
-    this.load.animation('alchemist_anim', '../assets/alchemist_anim.json')
+    this.load.atlas('player_1', '../assets/players_01.png', '../assets/player_atlas.json')
+    //this.load.animation('alchemist_anim', '../assets/alchemist_anim.json')
 
   }
 
@@ -80,7 +80,7 @@ class MainScene extends Phaser.Scene {
       const exists = this.avatars.has(avatar.id)
 
       if (!exists) {
-        const _avatar = new Avatar({scene: this,x: avatar.x, y: avatar.y, frame: 'alchemist'})
+        const _avatar = new Avatar({scene: this,x: avatar.x, y: avatar.y, frame: 'player_1'})
         this.avatars.set(avatar.id, { avatar: _avatar })
 
       } else {

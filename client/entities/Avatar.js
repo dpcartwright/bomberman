@@ -21,8 +21,6 @@ export default class Avatar extends Phaser.Physics.Matter.Sprite {
       this.setFixedRotation()
       this.createTouchCollisions(avatarCollider)
       this.createTestCollisions(avatarTestSensor)
-
-      //this.body.setSize(64, 64)
     }
 
     createTouchCollisions(avatarCollider) {
