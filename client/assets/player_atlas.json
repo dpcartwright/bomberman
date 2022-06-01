@@ -38,8 +38,125 @@
                 "x": 0.5,
                 "y": 0.5
             }
+        },
+        {
+            "filename": "p1_up_walk_1",
+            "frame": {
+                "w": 42,
+                "h": 66,
+                "x": 19,
+                "y": 102
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "p1_up_walk_2",
+            "frame": {
+                "w": 42,
+                "h": 66,
+                "x": 70,
+                "y": 102
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "p1_up_walk_3",
+            "frame": {
+                "w": 42,
+                "h": 66,
+                "x": 121,
+                "y": 102
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "p1_left_walk_1",
+            "frame": {
+                "w": 42,
+                "h": 66,
+                "x": 19,
+                "y": 177
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "p1_left_walk_2",
+            "frame": {
+                "w": 42,
+                "h": 66,
+                "x": 70,
+                "y": 177
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "p1_left_walk_3",
+            "frame": {
+                "w": 42,
+                "h": 66,
+                "x": 121,
+                "y": 177
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+    {
+        "filename": "p1_right_walk_1",
+        "frame": {
+            "w": 42,
+            "h": 66,
+            "x": 19,
+            "y": 252
+        },
+        "anchor": {
+            "x": 0.5,
+            "y": 0.5
         }
-    ],
+    },
+    {
+        "filename": "p1_right_walk_2",
+        "frame": {
+            "w": 42,
+            "h": 66,
+            "x": 70,
+            "y": 252
+        },
+        "anchor": {
+            "x": 0.5,
+            "y": 0.5
+        }
+    },
+    {
+        "filename": "p1_right_walk_3",
+        "frame": {
+            "w": 42,
+            "h": 66,
+            "x": 121,
+            "y": 252
+        },
+        "anchor": {
+            "x": 0.5,
+            "y": 0.5
+        }
+    }
+],
     "meta": {
         "description": "Manually created atlas, but the linked tool is still awesome.",
         "web": "https://gammafp.github.io/atlas-packer-phaser/"

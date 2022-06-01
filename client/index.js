@@ -29,7 +29,7 @@ class MainScene extends Phaser.Scene {
     this.load.image('breakable_block', '../assets/stage_01_breakable_block.png')
 
     this.load.atlas('player_1', '../assets/players_01.png', '../assets/player_atlas.json')
-    //this.load.animation('alchemist_anim', '../assets/alchemist_anim.json')
+    this.load.animation('player_1_anim', '../assets/player_anim.json')
 
   }
 
@@ -78,11 +78,9 @@ class MainScene extends Phaser.Scene {
 
     state.forEach(avatar => {
       const exists = this.avatars.has(avatar.id)
-
       if (!exists) {
         const _avatar = new Avatar({scene: this,x: avatar.x, y: avatar.y, frame: 'player_1'})
         this.avatars.set(avatar.id, { avatar: _avatar })
-
       } else {
         if (avatar.id != this.socket.id) {
           const _avatar = this.avatars.get(avatar.id).avatar
@@ -93,6 +91,7 @@ class MainScene extends Phaser.Scene {
     })
 
     this.clientPrediction(movement)
+
     this.serverReconciliation(movement)
     
     this.socket.emit('movement', movement)
@@ -145,7 +144,19 @@ clientPrediction = (movement) => {
     else player.setVelocityY(0)
     playerVault.add(
       SI.snapshot.create([{ id: this.socket.id, x: player.x, y: player.y }])
-    )
+    ) 
+
+    if (player.body.velocity.y <  0 ) { 
+      player.anims.play('walk_up',true) 
+    } else if (player.body.velocity.y >  0 ) {
+      player.anims.play('walk_down',true) 
+    } else if (player.body.velocity.x <  0 ) {
+      player.anims.play('walk_left',true) 
+    } else if (player.body.velocity.x >  0 ) {
+      player.anims.play('walk_right',true)
+    } else {
+      player.anims.play('stand',true)
+    }
   }
 }
 }

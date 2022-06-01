@@ -4,23 +4,79 @@
             "key": "walk_down",
             "type": "frames",
             "repeat": -1,
-            "frameRate": 12,
+            "frameRate": 4,
             "frames": [
                 {
-                    "key": "player01",
+                    "key": "player_1",
                     "frame": "p1_down_walk_1"
                 },
                 {
-                    "key": "player01",
+                    "key": "player_1",
                     "frame": "p1_down_walk_2"
                 },
                 {
-                    "key": "player01",
+                    "key": "player_1",
                     "frame": "p1_down_walk_3"
+                }
+            ]
+        },
+        {
+            "key": "walk_up",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 4,
+            "frames": [
+                {
+                    "key": "player_1",
+                    "frame": "p1_up_walk_1"
                 },
                 {
-                    "key": "player01",
-                    "frame": "p1_down_walk_4"
+                    "key": "player_1",
+                    "frame": "p1_up_walk_2"
+                },
+                {
+                    "key": "player_1",
+                    "frame": "p1_up_walk_3"
+                }
+            ]
+        },
+        {
+            "key": "walk_left",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 4,
+            "frames": [
+                {
+                    "key": "player_1",
+                    "frame": "p1_left_walk_1"
+                },
+                {
+                    "key": "player_1",
+                    "frame": "p1_left_walk_2"
+                },
+                {
+                    "key": "player_1",
+                    "frame": "p1_left_walk_3"
+                }
+            ]
+        },
+        {
+            "key": "walk_right",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 4,
+            "frames": [
+                {
+                    "key": "player_1",
+                    "frame": "p1_right_walk_1"
+                },
+                {
+                    "key": "player_1",
+                    "frame": "p1_right_walk_2"
+                },
+                {
+                    "key": "player_1",
+                    "frame": "p1_right_walk_3"
                 }
             ]
         },
@@ -28,23 +84,11 @@
             "key": "stand",
             "type": "frames",
             "repeat": -1,
-            "frameRate": 12,
+            "frameRate": 1,
             "frames": [
                 {
-                    "key": "player01",
+                    "key": "player_1",
                     "frame": "p1_down_walk_1"
-                },
-                {
-                    "key": "player01",
-                    "frame": "p1_down_walk_2"
-                },
-                {
-                    "key": "player01",
-                    "frame": "p1_down_walk_3"
-                },
-                {
-                    "key": "player01",
-                    "frame": "p1_down_walk_4"
                 }
             ]
         }
