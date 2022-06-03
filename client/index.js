@@ -28,22 +28,34 @@ class MainScene extends Phaser.Scene {
     this.load.image('static_block', '../assets/stage_01_static_block.png')
     this.load.image('breakable_block', '../assets/stage_01_breakable_block.png')
 
-    this.load.atlas('player_1', '../assets/players_01.png', '../assets/player_atlas.json')
-    this.load.animation('player_1_anim', '../assets/player_anim.json')
+    this.load.atlas('player_1', '../assets/players_01.png', '../assets/players_01_atlas.json')
+    this.load.atlas('player_2', '../assets/players_02.png', '../assets/players_02_atlas.json')
+    this.load.atlas('player_3', '../assets/players_03.png', '../assets/players_03_atlas.json')
+    this.load.atlas('player_4', '../assets/players_04.png', '../assets/players_04_atlas.json')
+    this.load.animation('player_1_anim', '../assets/players_01_anim.json')
+    this.load.animation('player_2_anim', '../assets/players_02_anim.json')
+    this.load.animation('player_3_anim', '../assets/players_03_anim.json')
+    this.load.animation('player_4_anim', '../assets/players_04_anim.json')
 
   }
 
   create() {
     this.cursors = this.input.keyboard.createCursorKeys()
+    const backgroundImage = this.add.sprite(0,0,'background')
 
     this.socket.on('snapshot', snapshot => {
       SI.snapshot.add(snapshot)
     })
     
-    this.input.mouse.disableContextMenu();
+    this.input.mouse.disableContextMenu()
+
+    backgroundImage.setScale(2)
   }
 
   update() {
+    this.socket.on('tooManyPlayers', playerCount => {
+      console.log('Too many players already: ' + playerCount)
+    })
     const snap = SI.calcInterpolation('x y', 'players')
     const blockSnap = SI.calcInterpolation('x y', 'blocks')
 
@@ -77,16 +89,21 @@ class MainScene extends Phaser.Scene {
     }
 
     state.forEach(avatar => {
+
       const exists = this.avatars.has(avatar.id)
       if (!exists) {
-        const _avatar = new Avatar({scene: this,x: avatar.x, y: avatar.y, frame: 'player_1'})
+        const frame = 'player_' + avatar.playerNumber
+        const _avatar = new Avatar({scene: this,x: avatar.x, y: avatar.y, frame: frame})
+        _avatar.setData({playerNumber: avatar.playerNumber, playerAnimFrame: avatar.playerAnimFrame})
         this.avatars.set(avatar.id, { avatar: _avatar })
       } else {
         if (avatar.id != this.socket.id) {
           const _avatar = this.avatars.get(avatar.id).avatar
           _avatar.setX(avatar.x)
           _avatar.setY(avatar.y)
-        } 
+          _avatar.setData({playerAnimFrame: avatar.playerAnimFrame})
+          _avatar.anims.play(_avatar.getData('playerAnimFrame'),true)
+        }
       }
     })
 
@@ -145,20 +162,25 @@ clientPrediction = (movement) => {
     playerVault.add(
       SI.snapshot.create([{ id: this.socket.id, x: player.x, y: player.y }])
     ) 
-
-    if (player.body.velocity.y <  0 ) { 
-      player.anims.play('walk_up',true) 
-    } else if (player.body.velocity.y >  0 ) {
-      player.anims.play('walk_down',true) 
-    } else if (player.body.velocity.x <  0 ) {
-      player.anims.play('walk_left',true) 
-    } else if (player.body.velocity.x >  0 ) {
-      player.anims.play('walk_right',true)
-    } else {
-      player.anims.play('stand',true)
-    }
+    this.playerAnimation(player)
   }
 }
+
+  playerAnimation(player) {
+    const playerPrefix = 'p' + player.getData('playerNumber')
+    if (player.body.velocity.y <  0 ) { 
+      player.anims.play(playerPrefix + '_walk_up',true) 
+    } else if (player.body.velocity.y >  0 ) {
+      player.anims.play(playerPrefix + '_walk_down',true) 
+    } else if (player.body.velocity.x <  0 ) {
+      player.anims.play(playerPrefix + '_walk_left',true) 
+    } else if (player.body.velocity.x >  0 ) {
+      player.anims.play(playerPrefix + '_walk_right',true)
+    } else {
+      player.anims.play(playerPrefix + '_stand',true)
+    }
+  }
+
 }
 
 const config = {

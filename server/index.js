@@ -39,6 +39,7 @@ class ServerScene extends Phaser.Scene {
     this.blockID = 0
     this.players = new Map()
     this.blocks = new Map()
+    this.spawnLocations = []
   }
 
   preload() {
@@ -48,13 +49,13 @@ class ServerScene extends Phaser.Scene {
   create() {
     this.matter.world.setBounds(0, 0, 1024, 832)
 
-    // create all blocks
+    // create stage
     let rowCount = 0
     let colCount = 0
     let blockID = 0
     stageBlocks.forEach(rows => {
       rows.forEach(colEntry => {
-        // "b"reakable blocks have a tiny chance of not being created. "e"dge and "s"tatic always are
+        // "b" breakable blocks have a tiny chance of not being created. "e"dge and "s" static always are
         if (colEntry === "e" || colEntry === "s" || (colEntry === "b" && Math.random() > 0.05)) {
           let blockEntity = new Block({scene: this, x: (colCount * 64), y: (rowCount * 64), serverMode: true, blockType: colEntry})
           blockID = this.blockID
@@ -63,6 +64,9 @@ class ServerScene extends Phaser.Scene {
             blockEntity
           })
           this.blockID++
+        } else if (parseInt(colEntry) >= 1 && parseInt(colEntry) < 100 ) {
+          // only values of 1 to 100 will create spawn points
+          this.spawnLocations.push({x: (colCount * 64), y: (rowCount * 64)})
         }
         colCount++
       })
@@ -71,34 +75,59 @@ class ServerScene extends Phaser.Scene {
     })
 
     io.on('connection', socket => {
-      const x = Math.random() * 180 + 40
-      const y = Math.random() * 180 + 40
-      const avatar = new Avatar({scene: this, x: x, y: y, serverMode: true})
+      
+      if (this.players.size < this.spawnLocations.length) {
+        const playerNumber = this.players.size
+        const x = this.spawnLocations[playerNumber].x
+        const y = this.spawnLocations[playerNumber].y
+        const avatar = new Avatar({scene: this, x: x, y: y, serverMode: true})
+        
+        avatar.setData({playerNumber: playerNumber + 1})
+        avatar.setData({playerAnimFrame: 'p' + avatar.getData('playerNumber') + '_stand'})
 
-      this.players.set(socket.id, {
-        socket,
-        avatar
-      })
+        this.players.set(socket.id, {
+          socket,
+          avatar
+        })
 
-      socket.on('movement', movement => {
-        const { left, right, up, down } = movement
-        const speed = 16
+        socket.on('movement', movement => {
+          const { left, right, up, down } = movement
+          const speed = 16
 
-        if (left) avatar.setVelocityX(-speed)
-        else if (right) avatar.setVelocityX(speed)
-        else avatar.setVelocityX(0)
+          if (left) avatar.setVelocityX(-speed)
+          else if (right) avatar.setVelocityX(speed)
+          else avatar.setVelocityX(0)
 
-        if (up) avatar.setVelocityY(-speed)
-        else if (down) avatar.setVelocityY(speed)
-        else avatar.setVelocityY(0)
+          if (up) avatar.setVelocityY(-speed)
+          else if (down) avatar.setVelocityY(speed)
+          else avatar.setVelocityY(0)
 
-      })
+          const playerPrefix = 'p' + avatar.getData('playerNumber')
+          let playerAnimFrame = ''
 
-      socket.on('disconnect', reason => {
-        const player = this.players.get(socket.id)
-        player.avatar.destroy()
-        this.players.delete(socket.id)
-      })
+          if (avatar.body.velocity.y <  0 ) { 
+            playerAnimFrame = playerPrefix + '_walk_up'
+          } else if (avatar.body.velocity.y >  0 ) {
+            playerAnimFrame = playerPrefix + '_walk_down'
+          } else if (avatar.body.velocity.x <  0 ) {
+            playerAnimFrame = playerPrefix + '_walk_left'
+          } else if (avatar.body.velocity.x >  0 ) {
+            playerAnimFrame = playerPrefix + '_walk_right'
+          } else {
+            playerAnimFrame = playerPrefix + '_stand'
+            }
+            
+          avatar.setData({playerAnimFrame: playerAnimFrame})
+        })
+
+        socket.on('disconnect', reason => {
+          const player = this.players.get(socket.id)
+          player.avatar.destroy()
+          this.players.delete(socket.id)
+        })
+      } else {
+        socket.emit('tooManyPlayers', this.players.size)
+      }
     })
   }
 
@@ -112,7 +141,7 @@ class ServerScene extends Phaser.Scene {
     const avatars = []
     this.players.forEach(player => {
       const { socket, avatar } = player
-      avatars.push({ id: socket.id, x: avatar.x, y: avatar.y })
+      avatars.push({ id: socket.id, x: avatar.x, y: avatar.y, playerNumber: avatar.getData('playerNumber'), playerAnimFrame: avatar.getData('playerAnimFrame') })
     })
 
     // get an array of all blocks

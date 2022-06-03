@@ -31,7 +31,6 @@ export default class Block extends Phaser.Physics.Matter.Sprite {
     const blockTestSensor = Bodies.rectangle(this.x, this.y, 64, 64, { isSensor: true, label: 'blockTestSensor', isStatic: true })
     const compoundBody = Body.create({
         parts: [blockCollider, blockTestSensor],
-        frictionAir: 0.35,
     })
     this.setExistingBody(compoundBody)
     

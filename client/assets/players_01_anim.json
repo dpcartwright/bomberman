@@ -1,7 +1,7 @@
 {
     "anims": [
         {
-            "key": "walk_down",
+            "key": "p1_walk_down",
             "type": "frames",
             "repeat": -1,
             "frameRate": 4,
@@ -13,15 +13,11 @@
                 {
                     "key": "player_1",
                     "frame": "p1_down_walk_2"
-                },
-                {
-                    "key": "player_1",
-                    "frame": "p1_down_walk_3"
                 }
             ]
         },
         {
-            "key": "walk_up",
+            "key": "p1_walk_up",
             "type": "frames",
             "repeat": -1,
             "frameRate": 4,
@@ -41,7 +37,7 @@
             ]
         },
         {
-            "key": "walk_left",
+            "key": "p1_walk_left",
             "type": "frames",
             "repeat": -1,
             "frameRate": 4,
@@ -61,7 +57,7 @@
             ]
         },
         {
-            "key": "walk_right",
+            "key": "p1_walk_right",
             "type": "frames",
             "repeat": -1,
             "frameRate": 4,
@@ -81,14 +77,14 @@
             ]
         },
         {
-            "key": "stand",
+            "key": "p1_stand",
             "type": "frames",
             "repeat": -1,
             "frameRate": 1,
             "frames": [
                 {
                     "key": "player_1",
-                    "frame": "p1_down_walk_1"
+                    "frame": "p1_down_face"
                 }
             ]
         }
