@@ -13,6 +13,10 @@ class MainScene extends Phaser.Scene {
 
     this.avatars = new Map()
     this.blocks = new Map()
+    this.bombs = []
+
+    this.bombCoolDown = false
+
     this.cursors
 
     this.socket = io('http://localhost:3000')
@@ -32,15 +36,22 @@ class MainScene extends Phaser.Scene {
     this.load.atlas('player_2', '../assets/players_02.png', '../assets/players_02_atlas.json')
     this.load.atlas('player_3', '../assets/players_03.png', '../assets/players_03_atlas.json')
     this.load.atlas('player_4', '../assets/players_04.png', '../assets/players_04_atlas.json')
+    this.load.atlas('items_effects', '../assets/items_effects.png', '../assets/items_effects.json')
+    
+
     this.load.animation('player_1_anim', '../assets/players_01_anim.json')
     this.load.animation('player_2_anim', '../assets/players_02_anim.json')
     this.load.animation('player_3_anim', '../assets/players_03_anim.json')
     this.load.animation('player_4_anim', '../assets/players_04_anim.json')
+    this.load.animation('items_effects_anim', '../assets/items_effects_anim.json')
 
   }
 
   create() {
     this.cursors = this.input.keyboard.createCursorKeys()
+
+    this.bombKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+
     const backgroundImage = this.add.sprite(0,0,'background')
 
     this.socket.on('snapshot', snapshot => {
@@ -112,6 +123,18 @@ class MainScene extends Phaser.Scene {
     this.serverReconciliation(movement)
     
     this.socket.emit('movement', movement)
+
+    if (this.bombKey.isDown && !this.bombCoolDown) {
+      this.bombCoolDown = true
+      this.socket.emit('dropBomb', {x: 100, y: 100})
+      this.time.addEvent({delay: 1000, callback: this.resetBombCoolDown(), callbackScope: this, loop: false})
+      console.log('bomb')
+    }
+  }
+
+  resetBombCoolDown() {
+    this.bombCoolDown = false
+    console.log('yo')
   }
   
 serverReconciliation = (movement) => {

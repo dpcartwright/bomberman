@@ -25,6 +25,7 @@ import Phaser from 'phaser'
 // imports for entities
 import Avatar from '../client/entities/Avatar.js'
 import Block from '../client/entities/Block.js'
+import Bomb from '../client/entities/Block.js'
 
 // imports for assets
 const stageBlocks = Object.values(JSON.parse(fs.readFileSync(__dirname + '/../client/stages/01.json', 'utf8')))
@@ -39,6 +40,7 @@ class ServerScene extends Phaser.Scene {
     this.blockID = 0
     this.players = new Map()
     this.blocks = new Map()
+    this.bombs = []
     this.spawnLocations = []
   }
 
@@ -120,6 +122,11 @@ class ServerScene extends Phaser.Scene {
           avatar.setData({playerAnimFrame: playerAnimFrame})
         })
 
+        socket.on('dropBomb', dropBomb => {
+          const bomb = new Bomb({scene: this, x: dropBomb.x, y: dropBomb.y, serverMode: true})
+          this.bombs.push(bomb)
+        })
+
         socket.on('disconnect', reason => {
           const player = this.players.get(socket.id)
           player.avatar.destroy()
@@ -164,6 +171,8 @@ class ServerScene extends Phaser.Scene {
       const { socket } = player
       socket.emit('snapshot', snapshot)
     })
+
+    console.log(this.bombs.length)
   }
 }
 

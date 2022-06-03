@@ -1,0 +1,24 @@
+{
+    "anims": [
+        {
+            "key": "bomb_regular_lit",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 4,
+            "frames": [
+                {
+                    "key": "items_effects",
+                    "frame": "bomb_regular_1"
+                },
+                {
+                    "key": "items_effects",
+                    "frame": "bomb_regular_2"
+                },
+                {
+                    "key": "items_effects",
+                    "frame": "bomb_regular_3"
+                }
+            ]
+        }
+    ]
+}
