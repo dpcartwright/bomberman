@@ -127,14 +127,8 @@ class MainScene extends Phaser.Scene {
     if (this.bombKey.isDown && !this.bombCoolDown) {
       this.bombCoolDown = true
       this.socket.emit('dropBomb', {x: 100, y: 100})
-      this.time.addEvent({delay: 1000, callback: this.resetBombCoolDown(), callbackScope: this, loop: false})
-      console.log('bomb')
+      setTimeout(() => this.bombCoolDown = false, 1000)
     }
-  }
-
-  resetBombCoolDown() {
-    this.bombCoolDown = false
-    console.log('yo')
   }
   
 serverReconciliation = (movement) => {
