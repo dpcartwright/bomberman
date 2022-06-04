@@ -183,7 +183,7 @@ serverReconciliation = (movement) => {
 
 clientPrediction = (movement) => {
   const { left, up, right, down } = movement
-  const speed = 16
+  const speed = 64
   const player = this.avatars.get(this.socket.id).avatar
 
   if (player) {

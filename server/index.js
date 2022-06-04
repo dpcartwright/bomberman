@@ -93,7 +93,7 @@ class ServerScene extends Phaser.Scene {
 
         socket.on('movement', movement => {
           const { left, right, up, down } = movement
-          const speed = 16
+          const speed = 64
 
           if (left) avatar.setVelocityX(-speed)
           else if (right) avatar.setVelocityX(speed)
