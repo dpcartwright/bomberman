@@ -1,6 +1,7 @@
 // imports for entities
 import Avatar from '../entities/Avatar.js'
 import Block from '../entities/Block.js'
+import Bomb from '../entities/Bomb.js'
 
 const { SnapshotInterpolation, Vault } = Snap
 const SI = new SnapshotInterpolation(15) // 15 FPS
@@ -13,7 +14,7 @@ class MainScene extends Phaser.Scene {
 
     this.avatars = new Map()
     this.blocks = new Map()
-    this.bombs = []
+    this.bombs = new Map()
 
     this.bombCoolDown = false
 
@@ -36,7 +37,7 @@ class MainScene extends Phaser.Scene {
     this.load.atlas('player_2', '../assets/players_02.png', '../assets/players_02_atlas.json')
     this.load.atlas('player_3', '../assets/players_03.png', '../assets/players_03_atlas.json')
     this.load.atlas('player_4', '../assets/players_04.png', '../assets/players_04_atlas.json')
-    this.load.atlas('items_effects', '../assets/items_effects.png', '../assets/items_effects_atlas.json')
+    this.load.atlas('bomb_regular', '../assets/items_effects.png', '../assets/bomb_regular_atlas.json')
     
 
     this.load.animation('player_1_anim', '../assets/players_01_anim.json')
@@ -69,13 +70,15 @@ class MainScene extends Phaser.Scene {
     })
     const snap = SI.calcInterpolation('x y', 'players')
     const blockSnap = SI.calcInterpolation('x y', 'blocks')
+    const bombSnap = SI.calcInterpolation('x y', 'bombs')
 
-    if (!snap  || !blockSnap) return
+    if (!snap  || !blockSnap || !bombSnap) return
 
     const { state } = snap
     const blockState = blockSnap.state
+    const bombState = bombSnap.state
     
-    if (!state || !blockState) return
+    if (!state || !blockState || !bombState) return
 
     blockState.forEach(block => {
       const exists = this.blocks.has(block.id)
@@ -92,6 +95,21 @@ class MainScene extends Phaser.Scene {
       }
     })
 
+    bombState.forEach(bomb => {
+      const exists = this.bombs.has(bomb.id)
+
+      if (!exists) {
+        const _bomb = new Bomb({scene: this, x: bomb.x, y: bomb.y, frame: 'bomb_regular'})
+        this.bombs.set(bomb.id, 
+          { bomb: _bomb }
+          )
+      } else {
+        const _bomb = this.bombs.get(bomb.id).bomb
+        _bomb.setX(bomb.x)
+        _bomb.setY(bomb.y)
+      }
+    })
+
     const movement = {
       left: this.cursors.left.isDown,
       right: this.cursors.right.isDown,
@@ -100,7 +118,6 @@ class MainScene extends Phaser.Scene {
     }
 
     state.forEach(avatar => {
-
       const exists = this.avatars.has(avatar.id)
       if (!exists) {
         const frame = 'player_' + avatar.playerNumber
@@ -126,7 +143,8 @@ class MainScene extends Phaser.Scene {
 
     if (this.bombKey.isDown && !this.bombCoolDown) {
       this.bombCoolDown = true
-      this.socket.emit('dropBomb', {x: 100, y: 100})
+      const droppingPlayer = this.avatars.get(this.socket.id).avatar
+      this.socket.emit('dropBomb', {x: droppingPlayer.x, y: droppingPlayer.y})
       setTimeout(() => this.bombCoolDown = false, 1000)
     }
   }
@@ -154,7 +172,7 @@ serverReconciliation = (movement) => {
       const isMoving = left || up || right || down
 
       // we correct the position faster if the player moves
-      const correction = isMoving ? 60 : 180
+      const correction = isMoving ? 180 : 360
 
       // apply a step by step correction of the player's position
       player.x -= offsetX / correction

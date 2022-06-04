@@ -7,15 +7,15 @@
             "frameRate": 4,
             "frames": [
                 {
-                    "key": "items_effects",
+                    "key": "bomb_regular",
                     "frame": "bomb_regular_1"
                 },
                 {
-                    "key": "items_effects",
+                    "key": "bomb_regular",
                     "frame": "bomb_regular_2"
                 },
                 {
-                    "key": "items_effects",
+                    "key": "bomb_regular",
                     "frame": "bomb_regular_3"
                 }
             ]

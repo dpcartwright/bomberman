@@ -33,6 +33,9 @@ export default class Block extends Phaser.Physics.Matter.Sprite {
         parts: [blockCollider, blockTestSensor],
     })
     this.setExistingBody(compoundBody)
+
+    this.setCollisionGroup(1)
+    this.setCollidesWith(0)
     
     this.createTouchCollisions(blockCollider)
     this.createTestCollisions(blockTestSensor)

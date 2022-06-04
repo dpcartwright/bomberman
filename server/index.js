@@ -40,7 +40,7 @@ class ServerScene extends Phaser.Scene {
     this.blockID = 0
     this.players = new Map()
     this.blocks = new Map()
-    this.bombs = []
+    this.bombs = new Map()
     this.spawnLocations = []
   }
 
@@ -57,7 +57,7 @@ class ServerScene extends Phaser.Scene {
     let blockID = 0
     stageBlocks.forEach(rows => {
       rows.forEach(colEntry => {
-        // "b" breakable blocks have a tiny chance of not being created. "e"dge and "s" static always are
+        // "b" breakable blocks have a tiny chance of not being created. "e" edge and "s" static always are
         if (colEntry === "e" || colEntry === "s" || (colEntry === "b" && Math.random() > 0.05)) {
           let blockEntity = new Block({scene: this, x: (colCount * 64), y: (rowCount * 64), serverMode: true, blockType: colEntry})
           blockID = this.blockID
@@ -123,8 +123,12 @@ class ServerScene extends Phaser.Scene {
         })
 
         socket.on('dropBomb', dropBomb => {
-          const bomb = new Bomb({scene: this, x: dropBomb.x, y: dropBomb.y, serverMode: true})
-          this.bombs.push(bomb)
+          const bombEntity = new Bomb({scene: this, x: dropBomb.x, y: dropBomb.y, serverMode: true})
+          const bombID = this.bombs.size
+          this.bombs.set(bombID, {
+            bombID,
+            bombEntity
+          })
         })
 
         socket.on('disconnect', reason => {
@@ -158,10 +162,17 @@ class ServerScene extends Phaser.Scene {
       blocksArr.push({ id: blockID, x: blockEntity.x, y: blockEntity.y, blockType: blockEntity.blockType })
     })
 
+    // get an array of all bombs
+    const bombsArr = []
+    this.bombs.forEach(bomb => {
+      const { bombID, bombEntity } = bomb
+      bombsArr.push({ id: bombID, x: bombEntity.x, y: bombEntity.y })
+    })
         
     const worldState = {
       players: avatars,
-      blocks: blocksArr
+      blocks: blocksArr,
+      bombs: bombsArr
     }
 
     const snapshot = SI.snapshot.create(worldState)

@@ -21,6 +21,10 @@ export default class Avatar extends Phaser.Physics.Matter.Sprite {
           frictionAir: 0.9,
       })
       this.setExistingBody(compoundBody)
+      
+    this.setCollisionGroup(1)
+    this.setCollidesWith(0)
+
       this.setFixedRotation()
       this.createTouchCollisions(avatarCollider)
       this.createTestCollisions(avatarTestSensor)
