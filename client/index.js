@@ -190,7 +190,6 @@ clientPrediction = (movement) => {
     if (movement.left) player.setVelocityX(-speed)
     else if (movement.right) player.setVelocityX(speed)
     else player.setVelocityX(0)
-
     if (movement.up) player.setVelocityY(-speed)
     else if (movement.down) player.setVelocityY(speed)
     else player.setVelocityY(0)
@@ -228,7 +227,7 @@ const config = {
     zoom: 1
   },
   physics: {
-    default: 'matter',
+    default: 'arcade',
     matter: {
       gravity: { y: 0 },
       debug: true,

@@ -1,16 +1,17 @@
-export default class Bomb extends Phaser.Physics.Matter.Sprite {
+export default class Bomb extends Phaser.Physics.Arcade.Sprite {
   constructor(data) {
     let { scene, x, y, frame, serverMode } = data
 
     if (serverMode) {
-      super(scene.matter.world, x , y, '')
+      super(scene, x , y, '')
     } else {
-      super(scene.matter.world, x , y, frame)
+      super(scene, x , y, frame)
     }
 
     scene.add.existing(this)
-
-    const { Body, Bodies } = Phaser.Physics.Matter.Matter
+    scene.physics.add.existing(this)
+/*
+    const { Body, Bodies } = Phaser.Physics.Arcade.Arcade
     const blockTestSensor = Bodies.rectangle(this.x, this.y, 1, 1, { isSensor: true, label: 'blockTestSensor', isStatic: true })
     const compoundBody = Body.create({
         parts: [blockTestSensor],
@@ -24,7 +25,7 @@ export default class Bomb extends Phaser.Physics.Matter.Sprite {
 
     this.setFixedRotation()
     this.setStatic(true)
-
+*/
     //this.body.setSize(64, 64)
   }
   

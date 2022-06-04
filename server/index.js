@@ -49,8 +49,7 @@ class ServerScene extends Phaser.Scene {
   }
 
   create() {
-    this.matter.world.setBounds(0, 0, 1024, 832)
-
+    this.physics.world.setBounds(0, 0, 1024, 832)
     // create stage
     let rowCount = 0
     let colCount = 0
@@ -196,11 +195,9 @@ const config = {
   audio: false,
   scene: [ServerScene],
   physics: {
-    default: 'matter',
+    default: 'arcade',
     matter: {
-      gravity: { y: 0 },
-      debug: false,
-      debugBodyColor: 0xff00ff
+      gravity: { y: 0 }
     },
   }
 }

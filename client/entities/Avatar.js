@@ -1,19 +1,20 @@
-export default class Avatar extends Phaser.Physics.Matter.Sprite {
+export default class Avatar extends Phaser.Physics.Arcade.Sprite {
     constructor(data) {
       let { scene, x, y, frame, serverMode } = data
 
       const blockSpriteOffset = 32 // half of block height - shouldn't be hardcoded like this
         
         if (serverMode) {
-            super(scene.matter.world, x + blockSpriteOffset, y + blockSpriteOffset, '')
+            super(scene, x + blockSpriteOffset, y + blockSpriteOffset, '')
         } else {
-            super(scene.matter.world, x + blockSpriteOffset, y + blockSpriteOffset, frame)
+            super(scene, x + blockSpriteOffset, y + blockSpriteOffset, frame)
         }
   
 
       scene.add.existing(this)
-
-      const { Body, Bodies } = Phaser.Physics.Matter.Matter
+      scene.physics.add.existing(this)
+/*
+      const { Body, Bodies } = Phaser.Physics.Arcade.Arcade
       const avatarCollider = Bodies.rectangle(this.x, this.y + 4, 60, 66,  { isSensor: false, label: 'avatarCollider' })
       const avatarTestSensor = Bodies.rectangle(this.x, this.y + 4, 40, 60,  { isSensor: true, label: 'avatarTestSensor' })
       const compoundBody = Body.create({
@@ -28,6 +29,7 @@ export default class Avatar extends Phaser.Physics.Matter.Sprite {
       this.setFixedRotation()
       this.createTouchCollisions(avatarCollider)
       this.createTestCollisions(avatarTestSensor)
+      */
     }
 
     createTouchCollisions(avatarCollider) {

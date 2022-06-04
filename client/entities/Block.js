@@ -1,4 +1,4 @@
-export default class Block extends Phaser.Physics.Matter.Sprite {
+export default class Block extends Phaser.Physics.Arcade.Sprite {
   constructor(data) {
     let { scene, x, y, frame, serverMode, blockType } = data
 
@@ -17,16 +17,17 @@ export default class Block extends Phaser.Physics.Matter.Sprite {
     const blockSpriteOffset = 32 // half of block height - shouldn't be hardcoded like this
 
     if (serverMode) {
-      super(scene.matter.world, x + blockSpriteOffset, y + blockSpriteOffset, '')
+      super(scene, x + blockSpriteOffset, y + blockSpriteOffset, '')
     } else {
-      super(scene.matter.world, x + blockSpriteOffset, y + blockSpriteOffset, frame)
+      super(scene, x + blockSpriteOffset, y + blockSpriteOffset, frame)
     }
 
     this.blockType = blockType
 
     scene.add.existing(this)
-
-    const { Body, Bodies } = Phaser.Physics.Matter.Matter
+    scene.physics.add.existing(this)
+/*
+    const { Body, Bodies } = Phaser.Physics.Arcade.Arcade
     const blockCollider = Bodies.rectangle(this.x, this.y, 64, 64, { isSensor: false, label: 'blockCollider', isStatic: true })
     const blockTestSensor = Bodies.rectangle(this.x, this.y, 64, 64, { isSensor: true, label: 'blockTestSensor', isStatic: true })
     const compoundBody = Body.create({
@@ -42,7 +43,7 @@ export default class Block extends Phaser.Physics.Matter.Sprite {
 
     this.setFixedRotation()
     this.setStatic(true)
-
+*/
     //this.body.setSize(64, 64)
   }
   
