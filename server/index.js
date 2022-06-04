@@ -157,7 +157,8 @@ class ServerScene extends Phaser.Scene {
       const { blockID, blockEntity } = block
       blocksArr.push({ id: blockID, x: blockEntity.x, y: blockEntity.y, blockType: blockEntity.blockType })
     })
-    
+
+        
     const worldState = {
       players: avatars,
       blocks: blocksArr
@@ -172,7 +173,6 @@ class ServerScene extends Phaser.Scene {
       socket.emit('snapshot', snapshot)
     })
 
-    console.log(this.bombs.length)
   }
 }
 

@@ -36,7 +36,7 @@ class MainScene extends Phaser.Scene {
     this.load.atlas('player_2', '../assets/players_02.png', '../assets/players_02_atlas.json')
     this.load.atlas('player_3', '../assets/players_03.png', '../assets/players_03_atlas.json')
     this.load.atlas('player_4', '../assets/players_04.png', '../assets/players_04_atlas.json')
-    this.load.atlas('items_effects', '../assets/items_effects.png', '../assets/items_effects.json')
+    this.load.atlas('items_effects', '../assets/items_effects.png', '../assets/items_effects_atlas.json')
     
 
     this.load.animation('player_1_anim', '../assets/players_01_anim.json')
