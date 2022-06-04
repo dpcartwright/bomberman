@@ -196,7 +196,7 @@ const config = {
   scene: [ServerScene],
   physics: {
     default: 'arcade',
-    matter: {
+    arcade: {
       gravity: { y: 0 }
     },
   }

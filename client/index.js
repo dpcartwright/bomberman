@@ -228,7 +228,7 @@ const config = {
   },
   physics: {
     default: 'arcade',
-    matter: {
+    arcade: {
       gravity: { y: 0 },
       debug: true,
       debugBodyColor: 0xff00ff
