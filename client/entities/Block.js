@@ -1,6 +1,6 @@
 export default class Block extends Phaser.Physics.Arcade.Sprite {
   constructor(data) {
-    let { scene, x, y, frame, serverMode, blockType } = data
+    let { scene, x, y, frame, serverMode, blockType, blockID } = data
 
     switch (blockType) {
       case "e":
@@ -21,6 +21,7 @@ export default class Block extends Phaser.Physics.Arcade.Sprite {
     }
 
     this.blockType = blockType
+    this.blockID = blockID
 
     scene.add.existing(this)
     scene.physicsBlocks.add(this)

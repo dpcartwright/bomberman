@@ -5,14 +5,17 @@ export default class Avatar extends Phaser.Physics.Arcade.Sprite {
         if (serverMode) {
             super(scene, x, y, '')
         } else {
-            super(scene, x , y, 'mewh')
+            super(scene, x , y, frame)
         }
-  
 
+        this.setOrigin(0.7,0.9)
+        
       scene.add.existing(this)
-      scene.physics.add.existing(this)
-      this.body.setCircle(22, -1, 20)
       scene.physicsAvatars.add(this)
+      this.body.setSize(50,50)
+      this.body.setOffset(-3,14)
+      this.body.setBounce(0)
+      this.body.setCollideWorldBounds()
 /*
       const { Body, Bodies } = Phaser.Physics.Arcade.Arcade
       const avatarCollider = Bodies.rectangle(this.x, this.y + 4, 60, 66,  { isSensor: false, label: 'avatarCollider' })

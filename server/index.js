@@ -49,7 +49,7 @@ class ServerScene extends Phaser.Scene {
   }
 
   create() {
-    this.physics.world.setBounds(0, 0, 1024, 832)
+    this.physics.world.setBounds(64, 64, 704, 768)
     // create physics groups
     this.physicsBlocks = this.physics.add.staticGroup()
     this.physicsAvatars = this.physics.add.group()
@@ -61,8 +61,8 @@ class ServerScene extends Phaser.Scene {
     stageBlocks.forEach(rows => {
       rows.forEach(colEntry => {
         // "b" breakable blocks have a tiny chance of not being created. "e" edge and "s" static always are
-        if (colEntry === "e" || colEntry === "s" || (colEntry === "b" && Math.random() > 0.05)) {
-          let blockEntity = new Block({scene: this, x: (colCount * 64 + 32), y: (rowCount * 64 +32), serverMode: true, blockType: colEntry})
+        if (colEntry === "e" || colEntry === "s" || (colEntry === "b" && Math.random() > 0.95)) {
+          let blockEntity = new Block({scene: this, x: (colCount * 64 + 32), y: (rowCount * 64 + 32), serverMode: true, blockType: colEntry, blockID: this.blockID})
           //exit
           blockID = this.blockID
           this.blocks.set(blockID, {
@@ -127,7 +127,8 @@ class ServerScene extends Phaser.Scene {
         })
 
         socket.on('dropBomb', dropBomb => {
-          const bombEntity = new Bomb({scene: this, x: dropBomb.x, y: dropBomb.y, serverMode: true})
+          const player = this.players.get(socket.id)
+          const bombEntity = new Bomb({scene: this, x: player.avatar.x, y: player.avatar.y, serverMode: true})
           const bombID = this.bombs.size
           this.bombs.set(bombID, {
             bombID,
@@ -145,10 +146,10 @@ class ServerScene extends Phaser.Scene {
       }
     })
 
-    this.physics.add.collider(this.physicsAvatars,this.physicsBlocks,function (avatar,block) {
-      //console.log('block x: ' + block.x + ' y: ' + block.y)
-      //console.log('avatar x: ' + avatar.x + ' y: ' + avatar.y)
-    })
+    this.physics.add.collider(this.physicsAvatars,this.physicsBlocks)
+
+    this.physics.add.collider(this.physicsAvatars, this.physicsBombs)
+
   }
 
   update() {

@@ -49,6 +49,7 @@ class MainScene extends Phaser.Scene {
   }
 
   create() {
+    this.physics.world.setBounds(64, 64, 704, 768)
     // create physics groups
     this.physicsBlocks = this.physics.add.staticGroup()
     this.physicsAvatars = this.physics.add.group()
@@ -58,7 +59,7 @@ class MainScene extends Phaser.Scene {
 
     this.bombKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
 
-    const backgroundImage = this.add.sprite(0,0,'background')
+    this.add.sprite(0,0,'background').setScale(2)
 
     this.socket.on('snapshot', snapshot => {
       SI.snapshot.add(snapshot)
@@ -66,12 +67,14 @@ class MainScene extends Phaser.Scene {
     
     this.input.mouse.disableContextMenu()
 
-    backgroundImage.setScale(2)
     
     this.physics.add.collider(this.physicsAvatars,this.physicsBlocks,function (avatar,block) {
       //console.log('block x: ' + block.x + ' y: ' + block.y)
       //console.log('avatar x: ' + avatar.x + ' y: ' + avatar.y)
     })
+
+
+    this.physics.add.collider(this.physicsAvatars, this.physicsBombs)
   }
 
   update() {
@@ -94,7 +97,7 @@ class MainScene extends Phaser.Scene {
       const exists = this.blocks.has(block.id)
 
       if (!exists) {
-        const _block = new Block({scene: this, x: block.x, y: block.y, blockType: block.blockType})
+        const _block = new Block({scene: this, x: block.x, y: block.y, blockType: block.blockType, blockID: block.id})
         this.blocks.set(block.id, 
           { block: _block }
           )
@@ -113,10 +116,9 @@ class MainScene extends Phaser.Scene {
         this.bombs.set(bomb.id, 
           { bomb: _bomb }
           )
+        _bomb.anims.play('bomb_regular_lit', true)
       } else {
         const _bomb = this.bombs.get(bomb.id).bomb
-        _bomb.setX(bomb.x)
-        _bomb.setY(bomb.y)
       }
     })
 
@@ -137,19 +139,19 @@ class MainScene extends Phaser.Scene {
         _avatar.setData({playerNumber: avatar.playerNumber, playerAnimFrame: avatar.playerAnimFrame})
         this.avatars.set(avatar.id, { avatar: _avatar })
       } else {
-        if (avatar.id != this.socket.id) {
+        //if (avatar.id != this.socket.id) {
           const _avatar = this.avatars.get(avatar.id).avatar
           _avatar.setX(avatar.x)
           _avatar.setY(avatar.y)
           _avatar.setData({playerAnimFrame: avatar.playerAnimFrame})
           _avatar.anims.play(_avatar.getData('playerAnimFrame'),true)
-        }
+        //}
       }
     })
 
-    this.clientPrediction(movement)
+    //this.clientPrediction(movement)
 
-    this.serverReconciliation(movement)
+    //this.serverReconciliation(movement)
     
     this.socket.emit('movement', movement)
 
@@ -184,7 +186,7 @@ serverReconciliation = (movement) => {
       const isMoving = left || up || right || down
 
       // we correct the position faster if the player moves
-      const correction = isMoving ? 40 : 60
+      const correction = isMoving ? 10 : 30
 
       // apply a step by step correction of the player's position
       player.x -= offsetX / correction
