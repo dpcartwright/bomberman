@@ -50,6 +50,10 @@ class ServerScene extends Phaser.Scene {
 
   create() {
     this.physics.world.setBounds(0, 0, 1024, 832)
+    // create physics groups
+    this.physicsBlocks = this.physics.add.staticGroup()
+    this.physicsAvatars = this.physics.add.group()
+    this.physicsBombs = this.physics.add.group()
     // create stage
     let rowCount = 0
     let colCount = 0
@@ -58,7 +62,8 @@ class ServerScene extends Phaser.Scene {
       rows.forEach(colEntry => {
         // "b" breakable blocks have a tiny chance of not being created. "e" edge and "s" static always are
         if (colEntry === "e" || colEntry === "s" || (colEntry === "b" && Math.random() > 0.05)) {
-          let blockEntity = new Block({scene: this, x: (colCount * 64), y: (rowCount * 64), serverMode: true, blockType: colEntry})
+          let blockEntity = new Block({scene: this, x: (colCount * 64 + 32), y: (rowCount * 64 +32), serverMode: true, blockType: colEntry})
+          //exit
           blockID = this.blockID
           this.blocks.set(blockID, {
             blockID, 
@@ -79,8 +84,8 @@ class ServerScene extends Phaser.Scene {
       
       if (this.players.size < this.spawnLocations.length) {
         const playerNumber = this.players.size
-        const x = this.spawnLocations[playerNumber].x
-        const y = this.spawnLocations[playerNumber].y
+        const x = this.spawnLocations[playerNumber].x + 32
+        const y = this.spawnLocations[playerNumber].y + 32
         const avatar = new Avatar({scene: this, x: x, y: y, serverMode: true})
         
         avatar.setData({playerNumber: playerNumber + 1})
@@ -138,6 +143,11 @@ class ServerScene extends Phaser.Scene {
       } else {
         socket.emit('tooManyPlayers', this.players.size)
       }
+    })
+
+    this.physics.add.collider(this.physicsAvatars,this.physicsBlocks,function (avatar,block) {
+      //console.log('block x: ' + block.x + ' y: ' + block.y)
+      //console.log('avatar x: ' + avatar.x + ' y: ' + avatar.y)
     })
   }
 

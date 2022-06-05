@@ -14,18 +14,20 @@ export default class Block extends Phaser.Physics.Arcade.Sprite {
         frame = 'breakable_block'
     }
 
-    const blockSpriteOffset = 32 // half of block height - shouldn't be hardcoded like this
-
     if (serverMode) {
-      super(scene, x + blockSpriteOffset, y + blockSpriteOffset, '')
+      super(scene, x, y, '')
     } else {
-      super(scene, x + blockSpriteOffset, y + blockSpriteOffset, frame)
+      super(scene, x, y, frame)
     }
 
     this.blockType = blockType
 
     scene.add.existing(this)
-    scene.physics.add.existing(this)
+    scene.physicsBlocks.add(this)
+    this.body.setSize(64,64)
+    this.setImmovable()
+
+    //this.physics.add.collider(this, )
 /*
     const { Body, Bodies } = Phaser.Physics.Arcade.Arcade
     const blockCollider = Bodies.rectangle(this.x, this.y, 64, 64, { isSensor: false, label: 'blockCollider', isStatic: true })

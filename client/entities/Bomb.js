@@ -10,6 +10,7 @@ export default class Bomb extends Phaser.Physics.Arcade.Sprite {
 
     scene.add.existing(this)
     scene.physics.add.existing(this)
+    scene.physicsBombs.add(this)
 /*
     const { Body, Bodies } = Phaser.Physics.Arcade.Arcade
     const blockTestSensor = Bodies.rectangle(this.x, this.y, 1, 1, { isSensor: true, label: 'blockTestSensor', isStatic: true })

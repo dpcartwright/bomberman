@@ -49,6 +49,11 @@ class MainScene extends Phaser.Scene {
   }
 
   create() {
+    // create physics groups
+    this.physicsBlocks = this.physics.add.staticGroup()
+    this.physicsAvatars = this.physics.add.group()
+    this.physicsBombs = this.physics.add.group()
+
     this.cursors = this.input.keyboard.createCursorKeys()
 
     this.bombKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
@@ -62,6 +67,11 @@ class MainScene extends Phaser.Scene {
     this.input.mouse.disableContextMenu()
 
     backgroundImage.setScale(2)
+    
+    this.physics.add.collider(this.physicsAvatars,this.physicsBlocks,function (avatar,block) {
+      //console.log('block x: ' + block.x + ' y: ' + block.y)
+      //console.log('avatar x: ' + avatar.x + ' y: ' + avatar.y)
+    })
   }
 
   update() {
@@ -122,6 +132,8 @@ class MainScene extends Phaser.Scene {
       if (!exists) {
         const frame = 'player_' + avatar.playerNumber
         const _avatar = new Avatar({scene: this,x: avatar.x, y: avatar.y, frame: frame})
+        _avatar.setX(avatar.x)
+        _avatar.setY(avatar.y)
         _avatar.setData({playerNumber: avatar.playerNumber, playerAnimFrame: avatar.playerAnimFrame})
         this.avatars.set(avatar.id, { avatar: _avatar })
       } else {
@@ -172,7 +184,7 @@ serverReconciliation = (movement) => {
       const isMoving = left || up || right || down
 
       // we correct the position faster if the player moves
-      const correction = isMoving ? 180 : 360
+      const correction = isMoving ? 40 : 60
 
       // apply a step by step correction of the player's position
       player.x -= offsetX / correction
