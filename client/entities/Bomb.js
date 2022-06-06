@@ -111,7 +111,7 @@ export default class Bomb extends Phaser.Physics.Arcade.Sprite {
 
     // explosion damage effect only lasts for 20 msec - then destroy all colliders
     setTimeout(() => {
-      let _explosionCentre = new Explosion({scene: checkSpriteArr[0].scene, x: this.x, y: this.y, frame: 'explosion_centre'})
+      const _explosionCentre = new Explosion({scene: checkSpriteArr[0].scene, x: this.x, y: this.y, frame: 'explosion_centre'})
       _explosionCentre.anims.play('explosion_centre_anim', true)
       _explosionCentre.once('animationcomplete', () => {
         _explosionCentre.destroy()
@@ -119,46 +119,46 @@ export default class Bomb extends Phaser.Physics.Arcade.Sprite {
       for (let i = 1; i <= this.bombRange; i++) {
         //north
         if (i < explosionNorthBlockedAt) {
-          let _explosionNorth = new Explosion({scene: checkSpriteArr[0].scene, x: this.x, y: this.y - 64 * i, frame: 'explosion_north'})
-          _explosionNorth.anims.play('explosion_north_anim', true)
+          let _frame = 'explosion_north_end'
+          if (i < this.bombRange ) _frame = 'explosion_north'
+          const _explosionNorth = new Explosion({scene: checkSpriteArr[0].scene, x: this.x, y: this.y - 64 * i, frame: _frame})
+          _explosionNorth.anims.play(_frame +'_anim', true)
           _explosionNorth.once('animationcomplete', () => {
             _explosionNorth.destroy()
           })
         }
         //east
         if (i < explosionEastBlockedAt) {
-          let _explosionEast = new Explosion({scene: checkSpriteArr[0].scene, x: this.x + 64 * i, y: this.y, frame: 'explosion_east'})
-          _explosionEast.anims.play('explosion_east_anim', true)
+          let _frame = 'explosion_east_end'
+          if (i < this.bombRange ) _frame = 'explosion_east'
+          const _explosionEast = new Explosion({scene: checkSpriteArr[0].scene, x: this.x + 64 * i, y: this.y, frame: _frame})
+          _explosionEast.anims.play(_frame + '_anim', true)
           _explosionEast.once('animationcomplete', () => {
             _explosionEast.destroy()
           })
         }
         //south
         if (i < explosionSouthBlockedAt) {
-          let _explosionSouth = new Explosion({scene: checkSpriteArr[0].scene, x: this.x, y: this.y + 64 * i, frame: 'explosion_centre'})
-          _explosionSouth.anims.play('explosion_centre_anim', true)
+          let _frame = 'explosion_south_end'
+          if (i < this.bombRange ) _frame = 'explosion_south'
+          const _explosionSouth = new Explosion({scene: checkSpriteArr[0].scene, x: this.x, y: this.y + 64 * i, frame: _frame})
+          _explosionSouth.anims.play(_frame+ '_anim', true)
           _explosionSouth.once('animationcomplete', () => {
             _explosionSouth.destroy()
           })
         }
         //west
         if (i < explosionWestBlockedAt) {
-          let _explosionWest= new Explosion({scene: checkSpriteArr[0].scene, x: this.x - 64 * i, y: this.y, frame: 'explosion_centre'})
-          _explosionWest.anims.play('explosion_centre_anim', true)
+          let _frame = 'explosion_west_end'
+          if (i < this.bombRange ) _frame = 'explosion_west'
+          const _explosionWest= new Explosion({scene: checkSpriteArr[0].scene, x: this.x - 64 * i, y: this.y, frame: _frame})
+          _explosionWest.anims.play(_frame + '_anim', true)
           _explosionWest.once('animationcomplete', () => {
             _explosionWest.destroy()
           })
         }
       }
       checkSpriteArr.forEach((checkSprite) => checkSprite.destroy())
-      console.log('north:')
-      console.log(explosionNorthBlockedAt)
-      console.log('east:')
-      console.log(explosionEastBlockedAt)
-      console.log('south:')
-      console.log(explosionSouthBlockedAt)
-      console.log('west:')
-      console.log(explosionWestBlockedAt)
     }, 20)
 
     this.scene.physicsBombs.remove(this)

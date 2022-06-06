@@ -41,7 +41,13 @@ class MainScene extends Phaser.Scene {
     this.load.atlas('bomb_regular', '../assets/items_effects.png', '../assets/bomb_regular_atlas.json')
     this.load.atlas('explosion_centre', '../assets/items_effects.png', '../assets/explosion_centre_atlas.json')
     this.load.atlas('explosion_north', '../assets/items_effects.png', '../assets/explosion_north_atlas.json')
+    this.load.atlas('explosion_north_end', '../assets/items_effects.png', '../assets/explosion_north_end_atlas.json')
     this.load.atlas('explosion_east', '../assets/items_effects.png', '../assets/explosion_east_atlas.json')
+    this.load.atlas('explosion_east_end', '../assets/items_effects.png', '../assets/explosion_east_end_atlas.json')
+    this.load.atlas('explosion_south', '../assets/items_effects.png', '../assets/explosion_south_atlas.json')
+    this.load.atlas('explosion_south_end', '../assets/items_effects.png', '../assets/explosion_south_end_atlas.json')
+    this.load.atlas('explosion_west', '../assets/items_effects.png', '../assets/explosion_west_atlas.json')
+    this.load.atlas('explosion_west_end', '../assets/items_effects.png', '../assets/explosion_west_end_atlas.json')
     
 
     this.load.animation('player_1_anim', '../assets/players_01_anim.json')
@@ -51,7 +57,13 @@ class MainScene extends Phaser.Scene {
     this.load.animation('bomb_regular_anim', '../assets/bomb_regular_anim.json')
     this.load.animation('explosion_centre_anim', '../assets/explosion_centre_anim.json')
     this.load.animation('explosion_north_anim', '../assets/explosion_north_anim.json')
+    this.load.animation('explosion_north_end_anim', '../assets/explosion_north_end_anim.json')
     this.load.animation('explosion_east_anim', '../assets/explosion_east_anim.json')
+    this.load.animation('explosion_east_end_anim', '../assets/explosion_east_end_anim.json')
+    this.load.animation('explosion_south_anim', '../assets/explosion_south_anim.json')
+    this.load.animation('explosion_south_end_anim', '../assets/explosion_south_end_anim.json')
+    this.load.animation('explosion_west_anim', '../assets/explosion_west_anim.json')
+    this.load.animation('explosion_west_end_anim', '../assets/explosion_west_end_anim.json')
 
   }
 
