@@ -26,6 +26,7 @@ import Phaser from 'phaser'
 import Avatar from '../client/entities/Avatar.js'
 import Block from '../client/entities/Block.js'
 import Bomb from '../client/entities/Block.js'
+import Explosion from '../client/entities/Explosion.js'
 
 // imports for assets
 const stageBlocks = Object.values(JSON.parse(fs.readFileSync(__dirname + '/../client/stages/01.json', 'utf8')))

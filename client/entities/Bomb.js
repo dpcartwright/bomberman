@@ -1,3 +1,6 @@
+
+import Explosion from '../entities/Explosion.js'
+
 export default class Bomb extends Phaser.Physics.Arcade.Sprite {
   constructor(data) {
     let { scene, x, y, frame, serverMode } = data
@@ -11,7 +14,7 @@ export default class Bomb extends Phaser.Physics.Arcade.Sprite {
     } else {
       super(scene, x , y, frame)
     }
-
+    
     scene.add.existing(this)
     scene.physicsBombs.add(this)
     this.body.setSize(64, 64)
@@ -42,69 +45,121 @@ export default class Bomb extends Phaser.Physics.Arcade.Sprite {
   explode() {
     this.isExploding = true
     let checkSpriteArr = []
-    let explosionNorth = new Map()
-    let explosionEast = new Map()
-    let explosionSouth = new Map()
-    let explosionWest = new Map()
+    let explosionNorthBlockedAt = this.bombRange + 1
+    let explosionEastBlockedAt = this.bombRange + 1
+    let explosionSouthBlockedAt = this.bombRange + 1
+    let explosionWestBlockedAt = this.bombRange + 1
     let entitiesInExplosion = []
     for (let i = 1; i <= this.bombRange; i++) {
       // check north
-      if (explosionNorth.size < 1) {
-        let checkSprite = this.scene.add.sprite(this.x, this.y-64 * i)
+      if (explosionNorthBlockedAt > this.bombRange) {
+        let checkSprite = this.scene.add.sprite(this.x, this.y - 64 * i)
         this.scene.physics.add.existing(checkSprite)
         checkSprite.body.setSize(60,60)
         checkSpriteArr.push(checkSprite)
-        this.scene.physics.add.overlap(checkSprite,this.scene.physicsBlocks,function(obj1,blockEntity) { 
-          console.log(blockEntity)
-          blockID = blockEntity.blockID
-          this.explosionNorth.set(blockEntity.blockID, {
-            blockID, 
-            blockEntity
-          })
+        this.scene.physics.add.overlap(checkSprite,this.scene.physicsBlocks,function(explosionCollider,hitEntity) {
+          hitEntity.hitWithExplosion()
+          // if we have hit a block the explosion is blocked from going further
+          if (typeof hitEntity.blockType !== 'undefined') {
+            explosionNorthBlockedAt = i
+          }
         })
       }
       // check east
-      if (explosionEast.length < 1) {
-        let checkSprite = this.scene.add.sprite(this.x+64 * i, this.y)
+      if (explosionEastBlockedAt > this.bombRange) {
+        let checkSprite = this.scene.add.sprite(this.x + 64 * i, this.y)
         this.scene.physics.add.existing(checkSprite)
         checkSprite.body.setSize(60,60)
         checkSpriteArr.push(checkSprite)
-        this.scene.physics.add.overlap(checkSprite,this.scene.physicsBlocks,function(obj1,obj2) { 
-          explosionEast.push(obj2)
+        this.scene.physics.add.overlap(checkSprite,this.scene.physicsBlocks,function(explosionCollider,hitEntity) {
+          hitEntity.hitWithExplosion()
+          // if we have hit a block the explosion is blocked from going further
+          if (typeof hitEntity.blockType !== 'undefined') {
+            explosionEastBlockedAt = i
+          }
         })
       }
       // check south
-      if (explosionSouth.length < 1) {
-        let checkSprite = this.scene.add.sprite(this.x, this.y+64 * i)
+      if (explosionSouthBlockedAt > this.bombRange) {
+        let checkSprite = this.scene.add.sprite(this.x, this.y + 64 * i)
         this.scene.physics.add.existing(checkSprite)
         checkSprite.body.setSize(60,60)
         checkSpriteArr.push(checkSprite)
-        this.scene.physics.add.overlap(checkSprite,this.scene.physicsBlocks,function(obj1,obj2) { 
-          explosionSouth.push(obj2)
+        this.scene.physics.add.overlap(checkSprite,this.scene.physicsBlocks,function(explosionCollider,hitEntity) {
+          hitEntity.hitWithExplosion()
+          // if we have hit a block the explosion is blocked from going further
+          if (typeof hitEntity.blockType !== 'undefined') {
+            explosionSouthBlockedAt = i
+          }
         })
       }
       // check west
-      if (explosionWest.length < 1) {
-        let checkSprite = this.scene.add.sprite(this.x-64 * i, this.y)
+      if (explosionWestBlockedAt > this.bombRange) {
+        let checkSprite = this.scene.add.sprite(this.x - 64 * i, this.y)
         this.scene.physics.add.existing(checkSprite)
         checkSprite.body.setSize(60,60)
         checkSpriteArr.push(checkSprite)
-        this.scene.physics.add.overlap(checkSprite,this.scene.physicsBlocks,function(obj1,obj2) { 
-          explosionWest.push(obj2)
+        this.scene.physics.add.overlap(checkSprite,this.scene.physicsBlocks,function(explosionCollider,hitEntity) {
+          hitEntity.hitWithExplosion()
+          // if we have hit a block the explosion is blocked from going further
+          if (typeof hitEntity.blockType !== 'undefined') {
+            explosionWestBlockedAt = i
+          }
         })
       }
-      
-    setTimeout(() => checkSpriteArr.forEach((checkSprite) => checkSprite.destroy()), 30)
     }
-    
-    console.log('north:')
-    console.log(explosionNorth)
-    console.log('east:')
-    console.log(explosionEast)
-    console.log('south:')
-    console.log(explosionSouth)
-    console.log('west:')
-    console.log(explosionWest)
+
+    // explosion damage effect only lasts for 20 msec - then destroy all colliders
+    setTimeout(() => {
+      let _explosionCentre = new Explosion({scene: checkSpriteArr[0].scene, x: this.x, y: this.y, frame: 'explosion_centre'})
+      _explosionCentre.anims.play('explosion_centre_anim', true)
+      _explosionCentre.once('animationcomplete', () => {
+        _explosionCentre.destroy()
+      })
+      for (let i = 1; i <= this.bombRange; i++) {
+        //north
+        if (i < explosionNorthBlockedAt) {
+          let _explosionNorth = new Explosion({scene: checkSpriteArr[0].scene, x: this.x, y: this.y - 64 * i, frame: 'explosion_north'})
+          _explosionNorth.anims.play('explosion_north_anim', true)
+          _explosionNorth.once('animationcomplete', () => {
+            _explosionNorth.destroy()
+          })
+        }
+        //east
+        if (i < explosionEastBlockedAt) {
+          let _explosionEast = new Explosion({scene: checkSpriteArr[0].scene, x: this.x + 64 * i, y: this.y, frame: 'explosion_east'})
+          _explosionEast.anims.play('explosion_east_anim', true)
+          _explosionEast.once('animationcomplete', () => {
+            _explosionEast.destroy()
+          })
+        }
+        //south
+        if (i < explosionSouthBlockedAt) {
+          let _explosionSouth = new Explosion({scene: checkSpriteArr[0].scene, x: this.x, y: this.y + 64 * i, frame: 'explosion_centre'})
+          _explosionSouth.anims.play('explosion_centre_anim', true)
+          _explosionSouth.once('animationcomplete', () => {
+            _explosionSouth.destroy()
+          })
+        }
+        //west
+        if (i < explosionWestBlockedAt) {
+          let _explosionWest= new Explosion({scene: checkSpriteArr[0].scene, x: this.x - 64 * i, y: this.y, frame: 'explosion_centre'})
+          _explosionWest.anims.play('explosion_centre_anim', true)
+          _explosionWest.once('animationcomplete', () => {
+            _explosionWest.destroy()
+          })
+        }
+      }
+      checkSpriteArr.forEach((checkSprite) => checkSprite.destroy())
+      console.log('north:')
+      console.log(explosionNorthBlockedAt)
+      console.log('east:')
+      console.log(explosionEastBlockedAt)
+      console.log('south:')
+      console.log(explosionSouthBlockedAt)
+      console.log('west:')
+      console.log(explosionWestBlockedAt)
+    }, 20)
 
     this.scene.physicsBombs.remove(this)
     this.destroy()

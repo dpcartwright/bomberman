@@ -2,6 +2,7 @@
 import Avatar from '../entities/Avatar.js'
 import Block from '../entities/Block.js'
 import Bomb from '../entities/Bomb.js'
+import Explosion from '../entities/Explosion.js'
 
 const { SnapshotInterpolation, Vault } = Snap
 const SI = new SnapshotInterpolation(15) // 15 FPS
@@ -38,13 +39,19 @@ class MainScene extends Phaser.Scene {
     this.load.atlas('player_3', '../assets/players_03.png', '../assets/players_03_atlas.json')
     this.load.atlas('player_4', '../assets/players_04.png', '../assets/players_04_atlas.json')
     this.load.atlas('bomb_regular', '../assets/items_effects.png', '../assets/bomb_regular_atlas.json')
+    this.load.atlas('explosion_centre', '../assets/items_effects.png', '../assets/explosion_centre_atlas.json')
+    this.load.atlas('explosion_north', '../assets/items_effects.png', '../assets/explosion_north_atlas.json')
+    this.load.atlas('explosion_east', '../assets/items_effects.png', '../assets/explosion_east_atlas.json')
     
 
     this.load.animation('player_1_anim', '../assets/players_01_anim.json')
     this.load.animation('player_2_anim', '../assets/players_02_anim.json')
     this.load.animation('player_3_anim', '../assets/players_03_anim.json')
     this.load.animation('player_4_anim', '../assets/players_04_anim.json')
-    this.load.animation('items_effects_anim', '../assets/items_effects_anim.json')
+    this.load.animation('bomb_regular_anim', '../assets/bomb_regular_anim.json')
+    this.load.animation('explosion_centre_anim', '../assets/explosion_centre_anim.json')
+    this.load.animation('explosion_north_anim', '../assets/explosion_north_anim.json')
+    this.load.animation('explosion_east_anim', '../assets/explosion_east_anim.json')
 
   }
 

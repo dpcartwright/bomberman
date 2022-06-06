@@ -2,13 +2,13 @@ export default class Avatar extends Phaser.Physics.Arcade.Sprite {
     constructor(data) {
       let { scene, x, y, frame, serverMode } = data
         
-        if (serverMode) {
-            super(scene, x, y, '')
-        } else {
-            super(scene, x , y, frame)
-        }
+      if (serverMode) {
+        super(scene, x, y, '')
+      } else {
+        super(scene, x , y, frame)
+      }
 
-        this.setOrigin(0.7,0.9)
+      this.setOrigin(0.7,0.9)
         
       scene.add.existing(this)
       scene.physicsAvatars.add(this)
@@ -16,6 +16,10 @@ export default class Avatar extends Phaser.Physics.Arcade.Sprite {
       this.body.setOffset(-3,14)
       this.body.setBounce(0)
       this.body.setCollideWorldBounds()
+
+      
+      this.processingDamage = false
+
 /*
       const { Body, Bodies } = Phaser.Physics.Arcade.Arcade
       const avatarCollider = Bodies.rectangle(this.x, this.y + 4, 60, 66,  { isSensor: false, label: 'avatarCollider' })
@@ -35,6 +39,12 @@ export default class Avatar extends Phaser.Physics.Arcade.Sprite {
       */
     }
 
+    hitWithExplosion() {
+        this.processingDamage = true
+        // only actually do anything if it's a "b" breakable block
+
+      }
+    
     createTouchCollisions(avatarCollider) {
       /*     
       this.scene.matterCollision.addOnCollideStart({
